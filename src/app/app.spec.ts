@@ -33,6 +33,21 @@ describe('App', () => {
     expect(compiled.querySelectorAll('#collection app-product-card').length).toBe(8);
   });
 
+  it('should show the Aabroo brand and abaya logo in the header and footer', async () => {
+    const fixture = TestBed.createComponent(App);
+    await fixture.whenStable();
+    const compiled = fixture.nativeElement as HTMLElement;
+    const brandLinks = compiled.querySelectorAll<HTMLAnchorElement>('.brand');
+
+    expect(compiled.querySelector('header .brand')?.textContent).toContain('Aabroo');
+    expect(compiled.querySelector('.footer-brand')?.textContent).toContain('Aabroo');
+    expect(brandLinks).toHaveLength(2);
+    for (const link of brandLinks) {
+      expect(link.querySelector('img')?.getAttribute('src')).toBe('/images/aabroo-logo.svg');
+    }
+    expect(compiled.querySelector('.footer-brand + p')?.textContent).toBe('Grace in Every Layer.');
+  });
+
   it('should include a color in the WhatsApp message only after one is selected', () => {
     const fixture = TestBed.createComponent(App);
     const app = fixture.componentInstance;

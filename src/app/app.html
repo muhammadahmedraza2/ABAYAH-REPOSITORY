@@ -8,7 +8,10 @@
   </svg>
   <header class="topbar">
     <div class="container header-inner">
-      <a class="brand" href="#home" (click)="closeMenu()">{{ brandName }}</a>
+      <a class="brand" href="#home" (click)="closeMenu()" aria-label="Aabroo home">
+        <img class="brand-mark" src="/images/aabroo-logo.svg" alt="" width="42" height="42" />
+        <span>Aabroo</span>
+      </a>
       <nav class="main-nav" [class.nav-open]="menuOpen" aria-label="Main navigation">
         <button class="nav-close" type="button" (click)="closeMenu()" aria-label="Close menu">
           ×
@@ -348,7 +351,10 @@
   <footer class="site-footer">
     <div class="container footer-content">
       <div>
-        <a class="brand footer-brand" href="#home">{{ brandName }}</a>
+        <a class="brand footer-brand" href="#home" aria-label="Aabroo home">
+          <img class="brand-mark" src="/images/aabroo-logo.svg" alt="" width="42" height="42" />
+          <span>Aabroo</span>
+        </a>
         <p>{{ config.tagline }}</p>
       </div>
       <nav class="footer-nav" aria-label="Footer navigation">

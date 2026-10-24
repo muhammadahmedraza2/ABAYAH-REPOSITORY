@@ -7,8 +7,8 @@ export const WHATSAPP_CONTACTS = [
 ] as const;
 
 export const STORE_CONFIG = {
-  brandName: 'YOUR BRAND NAME',
-  tagline: 'Modern modest wear, thoughtfully chosen.',
+  brandName: 'Aabroo',
+  tagline: 'Grace in Every Layer.',
   about:
     'Our goal is to make elegant and modest abaya styles easy to explore. Discover your preferred design, choose a color and contact us directly on WhatsApp for details and availability.',
   faq: [
