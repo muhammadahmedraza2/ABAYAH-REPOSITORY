@@ -76,6 +76,25 @@ describe('App', () => {
     navyColor.images = originalImages;
   });
 
+  it('should show a matching illustrative preview when the selected color has no photo', async () => {
+    const fixture = TestBed.createComponent(App);
+    const app = fixture.componentInstance;
+    const product = app.products[0];
+    app.selectColor(product.id, product.colors[1]);
+    app.openDetails(product);
+    fixture.detectChanges();
+    await fixture.whenStable();
+
+    const compiled = fixture.nativeElement as HTMLElement;
+    const colorPreview = compiled.querySelector<SVGElement>('.detail-color-preview');
+    const previewNote = compiled.querySelector('.detail-copy .image-note');
+
+    expect(colorPreview?.getAttribute('aria-label')).toContain('Navy Blue');
+    expect(colorPreview?.style.getPropertyValue('--garment-color')).toBe('#172747');
+    expect(previewNote?.textContent).toContain('illustrative color preview');
+    expect(previewNote?.textContent).toContain('real photo');
+  });
+
   it('should expose both configured WhatsApp contacts', async () => {
     const fixture = TestBed.createComponent(App);
     await fixture.whenStable();

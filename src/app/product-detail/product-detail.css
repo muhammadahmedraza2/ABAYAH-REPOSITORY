@@ -49,6 +49,10 @@
   object-fit: cover;
 }
 
+.detail-color-preview {
+  background: #e9e1d7;
+}
+
 .detail-copy {
   padding: 20px;
 }

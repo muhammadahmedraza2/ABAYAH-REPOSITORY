@@ -17,17 +17,49 @@
     </button>
     <div class="row g-4 align-items-center">
       <div class="col-12 col-md-6">
-        <img
-          class="detail-image"
-          [src]="currentImage"
-          [alt]="
-            product.image.includes('placeholder')
-              ? 'Product photo placeholder for ' + product.name
-              : product.name + ' abaya design'
-          "
-          width="900"
-          height="1125"
-        />
+        @if (selectedColor && selectedColor.images.length === 0) {
+          <svg
+            class="detail-image detail-color-preview"
+            viewBox="0 0 800 1000"
+            role="img"
+            [attr.aria-label]="
+              'Illustrative ' + selectedColor.name + ' color preview for ' + product.name
+            "
+            [style.--garment-color]="selectedColor.hex"
+            focusable="false"
+          >
+            <rect width="800" height="1000" fill="#e9e1d7" />
+            <path d="M0 710c175-74 306-30 436 20s245 47 364-17v287H0z" fill="#d9cabc" />
+            <path
+              d="M400 220c-58 0-98 46-100 108l-27 106-100 224 92 43 92-178 8 291h70l8-291 92 178 92-43-100-224-27-106c-2-62-42-108-100-108z"
+              fill="var(--garment-color)"
+            />
+            <path d="M400 220c-40 0-63 38-63 94l63 68 63-68c0-56-23-94-63-94z" fill="#f3ede6" />
+            <path d="M400 383v431" stroke="#e9e1d7" stroke-width="6" />
+            <text
+              x="400"
+              y="900"
+              text-anchor="middle"
+              fill="#51443a"
+              font-family="Arial,sans-serif"
+              font-size="22"
+            >
+              Illustrative color preview
+            </text>
+          </svg>
+        } @else {
+          <img
+            class="detail-image"
+            [src]="currentImage"
+            [alt]="
+              product.image.includes('placeholder')
+                ? 'Product photo placeholder for ' + product.name
+                : product.name + ' abaya design'
+            "
+            width="900"
+            height="1125"
+          />
+        }
         @if (selectedColor; as color) {
           <p
             class="stock-status"
@@ -97,7 +129,8 @@
           </p>
           @if (color.images.length === 0) {
             <p class="image-note">
-              A photo for {{ color.name }} is not available. The main design photo is shown instead.
+              This is an illustrative color preview. A real photo of the {{ color.name }} abaya is
+              not available yet.
             </p>
           }
         } @else {
@@ -126,7 +159,7 @@
           <svg class="whatsapp-icon" aria-hidden="true" focusable="false">
             <use href="#whatsapp-symbol"></use>
           </svg>
-          Message us on WhatsApp
+          Contact us on WhatsApp
         </a>
       </div>
     </div>
