@@ -1,0 +1,31 @@
+<div class="size-guide-backdrop" (click)="closed.emit()" tabindex="-1">
+  <section
+    class="size-guide-dialog"
+    role="dialog"
+    aria-modal="true"
+    aria-labelledby="size-guide-title"
+    (click)="$event.stopPropagation()"
+  >
+    <button
+      #closeButton
+      class="size-guide-close"
+      type="button"
+      aria-label="Close size guide"
+      (click)="closed.emit()"
+    >
+      ×
+    </button>
+    <p class="guide-eyebrow">A comfortable fit matters</p>
+    <h2 id="size-guide-title">Size Guide</h2>
+    <p>
+      Verified size measurements are not available yet. Please message us for current size options
+      and measurements before choosing.
+    </p>
+    <a class="size-guide-contact" [href]="whatsappHref" target="_blank" rel="noopener noreferrer">
+      <svg class="whatsapp-icon" aria-hidden="true" focusable="false">
+        <use href="#whatsapp-symbol"></use>
+      </svg>
+      Message us on WhatsApp
+    </a>
+  </section>
+</div>

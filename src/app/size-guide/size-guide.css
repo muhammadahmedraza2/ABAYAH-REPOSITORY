@@ -1,0 +1,66 @@
+:host {
+  position: fixed;
+  z-index: 110;
+  inset: 0;
+}
+
+.size-guide-backdrop {
+  position: absolute;
+  inset: 0;
+  display: grid;
+  place-items: center;
+  padding: 20px;
+  background: rgba(24, 19, 16, 0.68);
+}
+
+.size-guide-dialog {
+  position: relative;
+  width: min(100%, 480px);
+  padding: 40px 32px 32px;
+  border: 1px solid #e5d9cc;
+  background: #fffdfa;
+  text-align: center;
+}
+
+.size-guide-close {
+  position: absolute;
+  top: 10px;
+  right: 13px;
+  width: 40px;
+  height: 40px;
+  border: 0;
+  background: transparent;
+  color: #33261e;
+  font-size: 1.8rem;
+}
+
+.guide-eyebrow {
+  color: #927965;
+  font-size: 0.72rem;
+  letter-spacing: 0.14em;
+  text-transform: uppercase;
+}
+
+h2 {
+  color: #211a16;
+  font-family: Georgia, 'Times New Roman', serif;
+}
+
+p:not(.guide-eyebrow) {
+  color: #71645a;
+  line-height: 1.7;
+}
+
+.size-guide-contact {
+  display: inline-flex;
+  min-height: 44px;
+  align-items: center;
+  justify-content: center;
+  gap: 8px;
+  margin-top: 10px;
+  padding: 0 20px;
+  border-radius: 30px;
+  background: #291f19;
+  color: #fff;
+  text-decoration: none;
+}

@@ -1,0 +1,134 @@
+<div class="detail-backdrop" (click)="closed.emit()" (keydown.escape)="closed.emit()" tabindex="-1">
+  <section
+    class="detail-dialog container"
+    role="dialog"
+    aria-modal="true"
+    [attr.aria-label]="product.name + ' details'"
+    (click)="$event.stopPropagation()"
+  >
+    <button
+      #closeButton
+      class="close-button"
+      type="button"
+      aria-label="Close product details"
+      (click)="closed.emit()"
+    >
+      ×
+    </button>
+    <div class="row g-4 align-items-center">
+      <div class="col-12 col-md-6">
+        <img
+          class="detail-image"
+          [src]="currentImage"
+          [alt]="
+            product.image.includes('placeholder')
+              ? 'Product photo placeholder for ' + product.name
+              : product.name + ' abaya design'
+          "
+          width="900"
+          height="1125"
+        />
+        @if (selectedColor; as color) {
+          <p
+            class="stock-status"
+            [class.stock-status-out]="color.inStock === false"
+            [class.stock-status-confirm]="color.inStock === null"
+          >
+            @if (color.inStock === true) {
+              In stock
+            } @else if (color.inStock === false) {
+              Out of stock
+            } @else {
+              Availability to be confirmed
+            }
+          </p>
+          @if (color.images.length > 1) {
+            <div class="image-thumbnails" aria-label="More product images">
+              @for (image of color.images; track image; let index = $index) {
+                <button
+                  class="thumbnail-button"
+                  type="button"
+                  [class.active]="selectedImageIndex === index"
+                  [attr.aria-label]="'Show image ' + (index + 1)"
+                  (click)="selectedImageIndex = index"
+                >
+                  <img
+                    [src]="image"
+                    [alt]="product.name + ' view ' + (index + 1)"
+                    width="80"
+                    height="100"
+                  />
+                </button>
+              }
+            </div>
+          }
+        }
+      </div>
+      <div class="col-12 col-md-6 detail-copy">
+        <p class="detail-eyebrow">Collection details</p>
+        <h2>{{ product.name }}</h2>
+        @if (product.price !== null) {
+          <p class="detail-price">Rs. {{ product.price | number: '1.0-0' }}</p>
+        } @else {
+          <p class="detail-price">Price on request</p>
+        }
+        <p class="description">{{ product.description }}</p>
+        <h3>Choose a color</h3>
+        <div class="color-options">
+          @for (color of product.colors; track color.name) {
+            <button
+              class="color-option"
+              type="button"
+              [class.active]="selectedColorName === color.name"
+              [attr.aria-pressed]="selectedColorName === color.name"
+              (click)="selectColor(color)"
+            >
+              <span class="color-dot" [style.--swatch-color]="color.hex"></span>
+              {{ color.name }}
+              @if (color.inStock === false) {
+                <small>Out of stock</small>
+              }
+            </button>
+          }
+        </div>
+        @if (selectedColor; as color) {
+          <p class="selected-color">
+            Selected color: <strong>{{ color.name }}</strong>
+          </p>
+          @if (color.images.length === 0) {
+            <p class="image-note">
+              A photo for {{ color.name }} is not available. The main design photo is shown instead.
+            </p>
+          }
+        } @else {
+          <p class="selected-color">No color selected yet.</p>
+        }
+        @if (product.sizes; as sizes) {
+          <label class="size-label" for="abaya-size">Choose size (optional)</label>
+          <select
+            id="abaya-size"
+            class="size-select"
+            [value]="selectedSize"
+            (change)="onSizeChange($event)"
+          >
+            <option value="">Ask about available sizes</option>
+            @for (size of sizes; track size) {
+              <option [value]="size">{{ size }}</option>
+            }
+          </select>
+        } @else {
+          <p class="sizes">Ask us about available sizes on WhatsApp.</p>
+        }
+        <button class="size-guide-button" type="button" (click)="sizeGuideRequested.emit()">
+          Size Guide
+        </button>
+        <a class="whatsapp-detail" [href]="whatsappHref" target="_blank" rel="noopener noreferrer">
+          <svg class="whatsapp-icon" aria-hidden="true" focusable="false">
+            <use href="#whatsapp-symbol"></use>
+          </svg>
+          Message us on WhatsApp
+        </a>
+      </div>
+    </div>
+  </section>
+</div>

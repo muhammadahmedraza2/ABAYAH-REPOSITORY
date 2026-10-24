@@ -1,0 +1,109 @@
+<article class="product-card h-100">
+  <div class="product-image-wrap">
+    <img
+      [src]="selectedColor?.images?.[0] || product.image"
+      [alt]="
+        product.image.includes('placeholder')
+          ? 'Product photo placeholder for ' + product.name
+          : product.name + ' design'
+      "
+      width="600"
+      height="750"
+      loading="lazy"
+      decoding="async"
+    />
+    @if (product.isNewArrival) {
+      <span class="arrival-badge">New arrival</span>
+    }
+    @if (product.isBestSeller) {
+      <span class="bestseller-badge">Best seller</span>
+    }
+    <button
+      class="favorite-button"
+      type="button"
+      [attr.aria-pressed]="isFavorite"
+      [attr.aria-label]="
+        (isFavorite ? 'Remove ' : 'Add ') +
+        product.name +
+        (isFavorite ? ' from' : ' to') +
+        ' favorites'
+      "
+      (click)="favoriteToggled.emit()"
+    >
+      {{ isFavorite ? '♥' : '♡' }}
+    </button>
+  </div>
+  <div class="product-content">
+    <p class="product-kicker">Abaya collection</p>
+    <h3>{{ product.name }}</h3>
+    <p class="product-price">
+      @if (product.price !== null) {
+        Rs. {{ product.price | number: '1.0-0' }}
+      } @else {
+        <span>Price on request</span>
+      }
+    </p>
+    <p class="product-description">{{ product.description }}</p>
+    <div class="swatch-heading">
+      <span>Color options</span>
+      @if (selectedColor; as color) {
+        <span>{{ color.name }}</span>
+      } @else {
+        <span>Select a shade</span>
+      }
+    </div>
+    <div class="swatches" aria-label="Choose a color">
+      @for (color of product.colors; track color.name) {
+        <button
+          class="color-swatch"
+          type="button"
+          [style.--swatch-color]="color.hex"
+          [class.selected]="selectedColorName === color.name"
+          [attr.aria-label]="
+            'Select ' +
+            color.name +
+            (color.inStock === false
+              ? ', out of stock'
+              : color.inStock === null
+                ? ', availability unconfirmed'
+                : '')
+          "
+          [attr.aria-pressed]="selectedColorName === color.name"
+          [title]="
+            color.name +
+            (color.inStock === false
+              ? ' — Out of stock'
+              : color.inStock === null
+                ? ' — Ask for availability'
+                : '')
+          "
+          [class.out-of-stock]="color.inStock === false"
+          (click)="colorSelected.emit(color)"
+        ></button>
+      }
+    </div>
+    @if (selectedColor) {
+      @if (selectedColor.inStock === false) {
+        <p class="image-note stock-unavailable">
+          {{ selectedColor.name }} is currently out of stock.
+        </p>
+      } @else if (selectedColor.inStock === null) {
+        <p class="image-note">Availability for {{ selectedColor.name }} is not confirmed yet.</p>
+      }
+      @if (selectedColor.images.length === 0) {
+        <p class="image-note">A photo for {{ selectedColor.name }} is not available yet.</p>
+      }
+    }
+    <div class="product-actions">
+      <button class="btn detail-button" type="button" (click)="detailsRequested.emit()">
+        View Details
+      </button>
+      <a class="contact-button" [href]="whatsappHref" target="_blank" rel="noopener noreferrer">
+        <svg class="whatsapp-icon" aria-hidden="true" focusable="false">
+          <use href="#whatsapp-symbol"></use>
+        </svg>
+        Message us on WhatsApp
+      </a>
+    </div>
+  </div>
+</article>
