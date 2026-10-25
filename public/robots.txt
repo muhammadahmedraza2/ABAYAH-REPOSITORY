@@ -1,0 +1,5 @@
+
+User-agent: *
+Allow: /
+
+Sitemap: https://aabroo-modern-modest-wear.vercel.app/sitemap.xml
