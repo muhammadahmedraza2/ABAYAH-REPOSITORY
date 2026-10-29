@@ -49,6 +49,34 @@
   object-fit: cover;
 }
 
+.detail-gallery {
+  position: relative;
+}
+
+.gallery-arrow {
+  position: absolute;
+  top: 50%;
+  display: grid;
+  width: 42px;
+  height: 42px;
+  place-items: center;
+  transform: translateY(-50%);
+  border: 1px solid rgba(255, 255, 255, 0.8);
+  border-radius: 50%;
+  background: rgba(36, 27, 23, 0.72);
+  color: #fff;
+  font-size: 1.8rem;
+  line-height: 1;
+}
+
+.gallery-previous {
+  left: 12px;
+}
+
+.gallery-next {
+  right: 12px;
+}
+
 .detail-color-preview {
   background: #e9e1d7;
 }
@@ -102,6 +130,25 @@ h2 {
 .image-note {
   color: #75685f;
   line-height: 1.6;
+}
+
+.set-details h3 {
+  margin-bottom: 8px;
+}
+
+.set-details ul {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 8px 20px;
+  margin: 0;
+  padding-left: 20px;
+  color: #75685f;
+}
+
+.abaya-length {
+  margin: 12px 0;
+  color: #75685f;
+  font-size: 0.9rem;
 }
 
 h3 {

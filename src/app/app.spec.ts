@@ -25,12 +25,36 @@ describe('App', () => {
     expect(app).toBeTruthy();
   });
 
-  it('should render the hero headline and all collection designs', async () => {
+  it('should offer only the nine requested color options on every design', () => {
+    const expectedColors = [
+      'Mehndi Green',
+      'Black',
+      'Navy Blue',
+      'Mehroon (Maroon)',
+      'Brown',
+      'Half White',
+      'Plum',
+      'Light Pink',
+      'Peacock',
+    ];
+
+    for (const product of PRODUCTS) {
+      expect(product.colors.map((color) => color.name)).toEqual(expectedColors);
+    }
+  });
+
+  it('should render the hero headline and confirmed collection listing', async () => {
     const fixture = TestBed.createComponent(App);
     await fixture.whenStable();
     const compiled = fixture.nativeElement as HTMLElement;
     expect(compiled.querySelector('h1')?.textContent).toContain('Timeless Elegance');
-    expect(compiled.querySelectorAll('#collection app-product-card').length).toBe(8);
+    expect(compiled.querySelectorAll('#collection app-product-card').length).toBe(1);
+    expect(compiled.querySelector('#collection app-product-card h3')?.textContent).toContain(
+      '4-Piece Abaya Set',
+    );
+    expect(compiled.querySelector('#collection app-product-card .product-kicker')?.textContent).toBe(
+      '4-Piece Set',
+    );
   });
 
   it('should show the Aabroo brand and abaya logo in the header and footer', async () => {
@@ -61,7 +85,7 @@ describe('App', () => {
     expect(defaultMessage).not.toContain('Assalam');
     expect(defaultMessage).not.toContain('Barah-e-karam');
 
-    app.selectColor(product.id, product.colors[1]);
+    app.selectColor(product.id, product.colors.find((color) => color.name === 'Navy Blue')!);
     const selectedMessage = decodeURIComponent(app.buildWhatsAppLink(product).split('text=')[1]);
     expect(selectedMessage).toContain('Color: Navy Blue');
   });
@@ -70,7 +94,7 @@ describe('App', () => {
     const fixture = TestBed.createComponent(App);
     const app = fixture.componentInstance;
     const product = app.products[0];
-    const navyColor = product.colors[1];
+    const navyColor = product.colors.find((color) => color.name === 'Navy Blue')!;
     const originalImages = navyColor.images;
     navyColor.images = ['/assets/abaya-navy.webp'];
     fixture.detectChanges();
@@ -95,7 +119,7 @@ describe('App', () => {
     const fixture = TestBed.createComponent(App);
     const app = fixture.componentInstance;
     const product = app.products[0];
-    app.selectColor(product.id, product.colors[1]);
+    app.selectColor(product.id, product.colors.find((color) => color.name === 'Navy Blue')!);
     app.openDetails(product);
     fixture.detectChanges();
     await fixture.whenStable();
@@ -128,15 +152,17 @@ describe('App', () => {
   it('should combine case-insensitive search, category, and color filters', () => {
     const app = TestBed.createComponent(App).componentInstance;
     app.searchQuery = 'NAVY';
-    app.selectedCategory = 'Open Abayas';
+    app.selectedCategory = '4-Piece Set';
     app.selectedColorFilter = 'navy';
 
-    expect(app.filteredProducts.map((product) => product.name)).toEqual(['Open Front Abaya']);
+    expect(app.filteredProducts.map((product) => product.name)).toEqual([
+      'Aabroo 4-Piece Abaya Set',
+    ]);
 
     app.resetFilters();
-    expect(app.filteredProducts).toHaveLength(8);
+    expect(app.filteredProducts).toHaveLength(1);
 
-    PRODUCTS[0].colors[1].inStock = false;
+    PRODUCTS[0].colors.find((color) => color.name === 'Navy Blue')!.inStock = false;
     app.selectedColorFilter = 'navy';
     expect(app.filteredProducts.every((product) => product.id !== 1)).toBe(true);
   });
@@ -144,15 +170,13 @@ describe('App', () => {
   it('should filter and sort products once real prices are configured', () => {
     const app = TestBed.createComponent(App).componentInstance;
     PRODUCTS[0].price = 2500;
-    PRODUCTS[1].price = 5200;
-    PRODUCTS[2].price = 4200;
 
     expect(app.hasKnownPrices).toBe(true);
     app.selectedPriceRange = '2000to3000';
     expect(app.filteredProducts.map((product) => product.id)).toEqual([1]);
     app.selectedPriceRange = '';
     app.sortBy = 'priceDesc';
-    expect(app.filteredProducts.slice(0, 3).map((product) => product.id)).toEqual([2, 3, 1]);
+    expect(app.filteredProducts.map((product) => product.id)).toEqual([1]);
   });
 
   it('should persist favorite IDs without adding duplicates', () => {
@@ -175,14 +199,26 @@ describe('App', () => {
     const fixture = TestBed.createComponent(App);
     const app = fixture.componentInstance;
     const product = app.products[0];
-    product.colors[1].images = ['/assets/navy-front.webp', '/assets/navy-back.webp'];
+    const navyColor = product.colors.find((color) => color.name === 'Navy Blue')!;
+    navyColor.images = ['/assets/navy-front.webp', '/assets/navy-back.webp'];
     product.sizes = ['M', 'L'];
-    app.selectColor(product.id, product.colors[1]);
+    app.selectColor(product.id, navyColor);
     app.openDetails(product);
     fixture.detectChanges();
 
     const compiled = fixture.nativeElement as HTMLElement;
+    expect(compiled.querySelector('.set-details')?.textContent).toContain('Abaya');
+    expect(compiled.querySelector('.set-details')?.textContent).toContain('Inner');
+    expect(compiled.querySelector('.set-details')?.textContent).toContain('Hijab');
+    expect(compiled.querySelector('.set-details')?.textContent).toContain('Dupatta');
+    expect(compiled.querySelector('.abaya-length')?.textContent).toContain('54 inches');
     const detailImage = compiled.querySelector<HTMLImageElement>('.detail-image');
+    expect(detailImage?.getAttribute('src')).toBe('/assets/navy-front.webp');
+    compiled.querySelector<HTMLButtonElement>('.gallery-next')?.click();
+    fixture.detectChanges();
+    expect(detailImage?.getAttribute('src')).toBe('/assets/navy-back.webp');
+    compiled.querySelector<HTMLButtonElement>('.gallery-previous')?.click();
+    fixture.detectChanges();
     expect(detailImage?.getAttribute('src')).toBe('/assets/navy-front.webp');
     compiled.querySelectorAll<HTMLButtonElement>('.thumbnail-button')[1]?.click();
     fixture.detectChanges();

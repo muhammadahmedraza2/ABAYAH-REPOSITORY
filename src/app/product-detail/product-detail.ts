@@ -52,6 +52,20 @@ export class ProductDetailComponent implements AfterViewInit {
     this.colorSelected.emit(color);
   }
 
+  showPreviousImage(): void {
+    const imageCount = this.selectedColor?.images.length ?? 0;
+    if (imageCount > 1) {
+      this.selectedImageIndex = (this.selectedImageIndex - 1 + imageCount) % imageCount;
+    }
+  }
+
+  showNextImage(): void {
+    const imageCount = this.selectedColor?.images.length ?? 0;
+    if (imageCount > 1) {
+      this.selectedImageIndex = (this.selectedImageIndex + 1) % imageCount;
+    }
+  }
+
   onSizeChange(event: Event): void {
     if (event.target instanceof HTMLSelectElement) {
       this.sizeSelected.emit(event.target.value);

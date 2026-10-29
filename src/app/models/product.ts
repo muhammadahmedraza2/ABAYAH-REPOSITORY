@@ -15,6 +15,8 @@ export interface Product {
   category: string;
   image: string;
   colors: ProductColor[];
+  includedItems?: string[];
+  lengthInches?: number;
   sizes?: string[];
   isNewArrival?: boolean;
   isBestSeller?: boolean;
