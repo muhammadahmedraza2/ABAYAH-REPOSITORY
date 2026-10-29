@@ -431,6 +431,92 @@ app-root {
   border-radius: 2px;
   box-shadow: 0 8px 26px #291f190a;
 }
+.color-gallery {
+  margin-top: 40px;
+  padding-top: 30px;
+  border-top: 1px solid #e5d9cc;
+}
+.color-gallery-heading {
+  margin-bottom: 20px;
+  text-align: center;
+}
+.color-gallery-heading .eyebrow {
+  margin-bottom: 8px;
+}
+.color-gallery-heading h3 {
+  margin: 0;
+  color: #211a16;
+  font-family: Georgia, 'Times New Roman', serif;
+  font-size: clamp(1.7rem, 3vw, 2.4rem);
+  font-weight: 500;
+}
+.color-gallery-heading > p:last-child {
+  margin: 10px 0 0;
+  color: #776b61;
+  font-size: 0.84rem;
+}
+.color-card-grid {
+  display: grid;
+  grid-template-columns: repeat(3, minmax(0, 1fr));
+  gap: 18px;
+}
+.color-card {
+  overflow: hidden;
+  padding: 0;
+  border: 1px solid #e9dfd4;
+  border-radius: 8px;
+  background: #fffdfa;
+  color: #211a16;
+  text-align: left;
+  cursor: pointer;
+  transition: border-color 160ms ease, box-shadow 160ms ease, transform 160ms ease;
+}
+.color-card:hover {
+  transform: translateY(-2px);
+  box-shadow: 0 9px 24px #291f1914;
+}
+.color-card.selected {
+  border-color: #49372b;
+  box-shadow: 0 0 0 2px #49372b;
+}
+.color-card-image {
+  position: relative;
+  display: block;
+  overflow: hidden;
+  background: #e9e1d7;
+}
+.color-card-image svg {
+  display: block;
+  width: 100%;
+  aspect-ratio: 1 / 0.83;
+  object-fit: cover;
+}
+.preview-label {
+  position: absolute;
+  right: 10px;
+  bottom: 10px;
+  padding: 5px 8px;
+  border-radius: 20px;
+  background: #fffdfae8;
+  color: #57483e;
+  font-size: 0.65rem;
+}
+.color-card-name,
+.color-card-note {
+  display: block;
+  padding: 0 14px;
+}
+.color-card-name {
+  padding-top: 13px;
+  font-family: Georgia, 'Times New Roman', serif;
+  font-size: 1.05rem;
+}
+.color-card-note {
+  padding-top: 5px;
+  padding-bottom: 14px;
+  color: #776b61;
+  font-size: 0.75rem;
+}
 .empty-results {
   padding: 40px 20px;
   background: #fffdfa;
@@ -769,6 +855,15 @@ app-root {
     grid-auto-columns: 78%;
     gap: 13px;
     justify-content: start;
+  }
+  .color-card-grid {
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+    gap: 12px;
+  }
+  .color-card-name,
+  .color-card-note {
+    padding-right: 10px;
+    padding-left: 10px;
   }
   .product-carousel-controls {
     margin-bottom: 12px;

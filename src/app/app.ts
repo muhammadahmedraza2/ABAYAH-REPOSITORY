@@ -40,8 +40,8 @@ export class App {
     {
       eyebrow: 'Made for your moments',
       title: 'A Complete Look, Made Simple',
-      description: 'Explore a coordinated four-piece set, thoughtfully put together for everyday wear.',
-      note: 'Abaya · Inner · Hijab · Dupatta',
+      description: 'Choose a coordinated three-piece or four-piece set, thoughtfully put together for everyday wear.',
+      note: '3-piece and 4-piece sets available',
     },
     {
       eyebrow: 'Find your signature',
@@ -55,7 +55,7 @@ export class App {
     ...new Map(
       PRODUCTS.flatMap((product) => product.colors)
         .filter((color) => color.inStock !== false)
-        .map((color) => [color.id, { id: color.id, name: color.name }]),
+        .map((color) => [color.id, { id: color.id, name: color.name, hex: color.hex }]),
     ).values(),
   ];
   readonly priceRanges: PriceRange[] = [

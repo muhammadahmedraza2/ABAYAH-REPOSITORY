@@ -43,31 +43,33 @@ describe('App', () => {
     }
   });
 
-  it('should render the hero headline and confirmed collection listing', async () => {
+  it('should render the hero headline and both abaya set types', async () => {
     const fixture = TestBed.createComponent(App);
     await fixture.whenStable();
     const compiled = fixture.nativeElement as HTMLElement;
     expect(compiled.querySelector('h1')?.textContent).toContain('Timeless Elegance');
-    expect(compiled.querySelectorAll('#collection app-product-card').length).toBe(1);
+    expect(compiled.querySelectorAll('#collection app-product-card').length).toBe(2);
     expect(compiled.querySelector('#collection app-product-card h3')?.textContent).toContain(
       '4-Piece Abaya Set',
     );
     expect(compiled.querySelector('#collection app-product-card .product-kicker')?.textContent).toBe(
       '4-Piece Set',
     );
+    expect(compiled.querySelectorAll('.color-card')).toHaveLength(9);
+    expect(compiled.querySelector('.color-card')?.textContent).toContain('54″ length · 23″ waist');
   });
 
-  it('should provide working hero slides and a product carousel', async () => {
+  it('should provide working hero slides, a set carousel, and color cards', async () => {
     const fixture = TestBed.createComponent(App);
     const app = fixture.componentInstance;
     await fixture.whenStable();
     const compiled = fixture.nativeElement as HTMLElement;
 
     expect(compiled.querySelectorAll('.hero-dots button')).toHaveLength(3);
-    expect(compiled.querySelectorAll('#collection-carousel .product-slide')).toHaveLength(1);
+    expect(compiled.querySelectorAll('#collection-carousel .product-slide')).toHaveLength(2);
     expect(
       compiled.querySelector<HTMLButtonElement>('[aria-label="Scroll products right"]')?.disabled,
-    ).toBe(true);
+    ).toBe(false);
 
     app.showHeroSlide(1);
     expect(app.activeHeroSlide).toBe(1);
@@ -179,7 +181,7 @@ describe('App', () => {
     ]);
 
     app.resetFilters();
-    expect(app.filteredProducts).toHaveLength(1);
+    expect(app.filteredProducts).toHaveLength(2);
 
     PRODUCTS[0].colors.find((color) => color.name === 'Navy Blue')!.inStock = false;
     app.selectedColorFilter = 'navy';
@@ -189,13 +191,14 @@ describe('App', () => {
   it('should filter and sort products once real prices are configured', () => {
     const app = TestBed.createComponent(App).componentInstance;
     PRODUCTS[0].price = 2500;
+    PRODUCTS[1].price = 3500;
 
     expect(app.hasKnownPrices).toBe(true);
     app.selectedPriceRange = '2000to3000';
     expect(app.filteredProducts.map((product) => product.id)).toEqual([1]);
     app.selectedPriceRange = '';
     app.sortBy = 'priceDesc';
-    expect(app.filteredProducts.map((product) => product.id)).toEqual([1]);
+    expect(app.filteredProducts.map((product) => product.id)).toEqual([2, 1]);
   });
 
   it('should persist favorite IDs without adding duplicates', () => {
@@ -231,6 +234,7 @@ describe('App', () => {
     expect(compiled.querySelector('.set-details')?.textContent).toContain('Hijab');
     expect(compiled.querySelector('.set-details')?.textContent).toContain('Dupatta');
     expect(compiled.querySelector('.abaya-length')?.textContent).toContain('54 inches');
+    expect(compiled.querySelector('.abaya-waist')?.textContent).toContain('23 inches');
     const detailImage = compiled.querySelector<HTMLImageElement>('.detail-image');
     expect(detailImage?.getAttribute('src')).toBe('/assets/navy-front.webp');
     compiled.querySelector<HTMLButtonElement>('.gallery-next')?.click();

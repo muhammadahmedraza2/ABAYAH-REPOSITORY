@@ -141,6 +141,9 @@
         @if (product.lengthInches; as lengthInches) {
           <p class="abaya-length">Abaya length: {{ lengthInches }} inches</p>
         }
+        @if (product.waistInches; as waistInches) {
+          <p class="abaya-waist">Waist: {{ waistInches }} inches</p>
+        }
         <h3>Choose a color</h3>
         <div class="color-options">
           @for (color of product.colors; track color.name) {

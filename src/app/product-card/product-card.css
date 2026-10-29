@@ -102,6 +102,22 @@ h3 {
   line-height: 1.6;
 }
 
+.product-set-items,
+.product-measurements {
+  margin: 0 0 9px;
+  color: #57483e;
+  font-size: 0.78rem;
+  line-height: 1.5;
+}
+
+.product-set-items {
+  font-weight: 600;
+}
+
+.product-measurements {
+  margin-bottom: 16px;
+}
+
 .swatch-heading {
   display: flex;
   justify-content: space-between;
