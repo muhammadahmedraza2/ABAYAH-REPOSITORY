@@ -30,6 +30,26 @@ export class App {
   readonly newArrivals = PRODUCTS.filter((product) => product.isNewArrival);
   readonly whatsappContacts = WHATSAPP_CONTACTS;
   readonly faq = STORE_CONFIG.faq;
+  readonly heroSlides = [
+    {
+      eyebrow: 'Modern modest wear',
+      title: 'Timeless Elegance, Everyday Comfort',
+      description: 'Discover graceful abaya designs made to bring quiet confidence to every moment.',
+      note: 'Thoughtful silhouettes. Effortless style.',
+    },
+    {
+      eyebrow: 'Made for your moments',
+      title: 'A Complete Look, Made Simple',
+      description: 'Explore a coordinated four-piece set, thoughtfully put together for everyday wear.',
+      note: 'Abaya · Inner · Hijab · Dupatta',
+    },
+    {
+      eyebrow: 'Find your signature',
+      title: 'Grace in Every Layer',
+      description: 'Choose your preferred shade and ask us about the latest availability on WhatsApp.',
+      note: 'Personal assistance, just a message away.',
+    },
+  ];
   readonly categories = [...new Set(PRODUCTS.map((product) => product.category))];
   readonly colorOptions = [
     ...new Map(
@@ -48,12 +68,13 @@ export class App {
   readonly navItems = [
     { label: 'Home', href: '#home' },
     { label: 'Collection', href: '#collection' },
-    { label: 'New Arrivals', href: '#new-arrivals' },
+    { label: 'New Arrivals', href: '#collection' },
     { label: 'About Us', href: '#about-us' },
     { label: 'Contact', href: '#contact' },
   ];
 
   menuOpen = false;
+  activeHeroSlide = 0;
   selectedProduct: Product | null = null;
   selectedColors: Record<number, string> = {};
   selectedSizes: Record<number, string> = {};
@@ -119,6 +140,15 @@ export class App {
       name,
       image: this.products.find((product) => product.category === name)?.image ?? '',
     }));
+  }
+
+  showHeroSlide(index: number): void {
+    this.activeHeroSlide = (index + this.heroSlides.length) % this.heroSlides.length;
+  }
+
+  scrollCollection(direction: -1 | 1): void {
+    const carousel = document.getElementById('collection-carousel');
+    carousel?.scrollBy({ left: direction * carousel.clientWidth * 0.8, behavior: 'smooth' });
   }
 
   selectColor(productId: number, color: ProductColor): void {

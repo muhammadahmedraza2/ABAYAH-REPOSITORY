@@ -57,6 +57,25 @@ describe('App', () => {
     );
   });
 
+  it('should provide working hero slides and a product carousel', async () => {
+    const fixture = TestBed.createComponent(App);
+    const app = fixture.componentInstance;
+    await fixture.whenStable();
+    const compiled = fixture.nativeElement as HTMLElement;
+
+    expect(compiled.querySelectorAll('.hero-dots button')).toHaveLength(3);
+    expect(compiled.querySelectorAll('#collection-carousel .product-slide')).toHaveLength(1);
+    expect(
+      compiled.querySelector<HTMLButtonElement>('[aria-label="Scroll products right"]')?.disabled,
+    ).toBe(true);
+
+    app.showHeroSlide(1);
+    expect(app.activeHeroSlide).toBe(1);
+
+    app.showHeroSlide(-1);
+    expect(app.activeHeroSlide).toBe(2);
+  });
+
   it('should show the Aabroo brand and abaya logo in the header and footer', async () => {
     const fixture = TestBed.createComponent(App);
     await fixture.whenStable();

@@ -6,6 +6,11 @@
       />
     </symbol>
   </svg>
+  <div class="announcement-bar">
+    <span>Grace in Every Layer</span>
+    <a href="#collection">Discover the Aabroo collection <span aria-hidden="true">→</span></a>
+    <span>Thoughtful modest wear</span>
+  </div>
   <header class="topbar">
     <div class="container header-inner">
       <a class="brand" href="#home" (click)="closeMenu()" aria-label="Aabroo home">
@@ -16,7 +21,7 @@
         <button class="nav-close" type="button" (click)="closeMenu()" aria-label="Close menu">
           ×
         </button>
-        @for (item of navItems; track item.href) {
+        @for (item of navItems; track item.label) {
           <a [href]="item.href" (click)="closeMenu()">{{ item.label }}</a>
         }
       </nav>
@@ -45,70 +50,81 @@
   </header>
 
   <main>
-    <section id="home" class="hero container">
-      <div class="hero-copy">
-        <p class="eyebrow">Modern modest wear</p>
-        <h1>Timeless Elegance,<br />Everyday Comfort</h1>
-        <p class="hero-description">
-          Discover graceful abaya designs made to bring quiet confidence to every moment.
-        </p>
+    <section id="home" class="hero container" aria-label="Featured collection slideshow">
+      <div class="hero-copy" aria-live="polite">
+        <p class="eyebrow">{{ heroSlides[activeHeroSlide].eyebrow }}</p>
+        <h1>{{ heroSlides[activeHeroSlide].title }}</h1>
+        <p class="hero-description">{{ heroSlides[activeHeroSlide].description }}</p>
         <div class="hero-actions">
-          <a class="button-dark" href="#collection">Explore Collection</a>
-          <a
-            class="button-outline"
-            [href]="buildWhatsAppLink()"
-            target="_blank"
-            rel="noopener noreferrer"
-          >
+          <a class="button-dark" href="#collection">Shop the collection</a>
+          <a class="button-outline" [href]="buildWhatsAppLink()" target="_blank" rel="noopener noreferrer">
             <svg class="whatsapp-icon" aria-hidden="true" focusable="false">
               <use href="#whatsapp-symbol"></use>
             </svg>
-            Contact us on WhatsApp
+            Chat with us
           </a>
         </div>
-        <p class="hero-note">Thoughtful silhouettes. Effortless style.</p>
+        <div class="hero-carousel-controls" role="group" aria-label="Hero carousel controls">
+          <button type="button" aria-label="Previous slide" (click)="showHeroSlide(activeHeroSlide - 1)">
+            <span aria-hidden="true">←</span>
+          </button>
+          <div class="hero-dots" role="group" aria-label="Choose a slide">
+            @for (slide of heroSlides; track slide.title; let index = $index) {
+              <button
+                type="button"
+                [class.active]="activeHeroSlide === index"
+                [attr.aria-label]="'Show slide ' + (index + 1) + ' of ' + heroSlides.length"
+                [attr.aria-pressed]="activeHeroSlide === index"
+                (click)="showHeroSlide(index)"
+              ></button>
+            }
+          </div>
+          <button type="button" aria-label="Next slide" (click)="showHeroSlide(activeHeroSlide + 1)">
+            <span aria-hidden="true">→</span>
+          </button>
+          <span class="hero-note">{{ heroSlides[activeHeroSlide].note }}</span>
+        </div>
       </div>
       <div class="hero-photo">
         <img
-          src="/images/product-photo-placeholder.svg"
-          alt="Lifestyle photo placeholder; replace with your abaya editorial image"
+          [src]="products[0].image"
+          alt="Abaya collection preview; product photo placeholder"
           width="900"
           height="1125"
           fetchpriority="high"
         />
-        <span class="photo-caption">Replace with your brand editorial</span>
+        <span class="photo-caption">Aabroo · Grace in Every Layer</span>
+        <span class="hero-photo-index">0{{ activeHeroSlide + 1 }} <span>/ 0{{ heroSlides.length }}</span></span>
       </div>
     </section>
 
     <section class="container category-section" aria-labelledby="category-heading">
       <div class="section-heading">
-        <p class="eyebrow">Find your style</p>
-        <h2 id="category-heading">Explore Categories</h2>
+        <p class="eyebrow">Curated for you</p>
+        <h2 id="category-heading">Shop by Collection</h2>
       </div>
-      <div class="row g-3">
+      <div class="category-track">
         @for (category of categoryCards; track category.name) {
-          <div class="col-6 col-md-4 col-lg-3">
-            <button class="category-card" type="button" (click)="setCategory(category.name)">
-              <img
-                [src]="category.image"
-                [alt]="category.name + ' sample image placeholder'"
-                width="480"
-                height="600"
-                loading="lazy"
-                decoding="async"
-              />
-              <span>{{ category.name }}</span>
-            </button>
-          </div>
+          <button class="category-card" type="button" (click)="setCategory(category.name)">
+            <img
+              [src]="category.image"
+              [alt]="category.name + ' collection photo placeholder'"
+              width="480"
+              height="600"
+              loading="lazy"
+              decoding="async"
+            />
+            <span>{{ category.name }} <span aria-hidden="true">→</span></span>
+          </button>
         }
       </div>
     </section>
 
     <section id="collection" class="container section-block">
       <div class="section-heading">
-        <p class="eyebrow">The collection</p>
-        <h2>Our Signature Collection</h2>
-        <p>Discover abayas designed for elegance, comfort and timeless style.</p>
+        <p class="eyebrow">Picked with care</p>
+        <h2>Just Arrived</h2>
+        <p>Explore the pieces currently listed in the Aabroo collection.</p>
       </div>
       <p class="sample-note">
         Product photographs are placeholders until original photos are added. Please contact us to
@@ -186,9 +202,26 @@
         <span class="result-count">{{ filteredProducts.length }} design(s)</span>
       </div>
       @if (filteredProducts.length > 0) {
-        <div class="row g-4">
+        <div class="product-carousel-controls">
+          <span class="result-count">{{ filteredProducts.length }} design(s)</span>
+          <div class="carousel-arrows">
+            <button
+              type="button"
+              aria-label="Scroll products left"
+              [disabled]="filteredProducts.length < 2"
+              (click)="scrollCollection(-1)"
+            ><span aria-hidden="true">←</span></button>
+            <button
+              type="button"
+              aria-label="Scroll products right"
+              [disabled]="filteredProducts.length < 2"
+              (click)="scrollCollection(1)"
+            ><span aria-hidden="true">→</span></button>
+          </div>
+        </div>
+        <div id="collection-carousel" class="product-carousel" role="region" aria-label="Abaya products">
           @for (product of filteredProducts; track product.id) {
-            <div class="col-12 col-sm-6 col-lg-3">
+            <div class="product-slide">
               <app-product-card
                 [product]="product"
                 [selectedColorName]="selectedColors[product.id]"
