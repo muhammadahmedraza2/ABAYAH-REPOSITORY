@@ -54,7 +54,7 @@ describe('App', () => {
     const product = app.products[0];
     const defaultMessage = decodeURIComponent(app.buildWhatsAppLink(product).split('text=')[1]);
 
-    expect(app.buildWhatsAppLink(product)).toContain('wa.me/923222123145');
+    expect(app.buildWhatsAppLink(product)).toContain('wa.me/923702996795');
     expect(defaultMessage).toContain('Hello! I am interested in an abaya');
     expect(defaultMessage).not.toContain('Color:');
     expect(defaultMessage).not.toContain('Price:');
@@ -117,8 +117,8 @@ describe('App', () => {
     const contactLinks = compiled.querySelectorAll<HTMLAnchorElement>('.contact-options a');
     const contactOptions = compiled.querySelector<HTMLElement>('.contact-options');
 
-    expect(contactLinks[0].href).toContain('wa.me/923222123145');
-    expect(contactLinks[1].href).toContain('wa.me/923702996795');
+    expect(contactLinks[0].href).toContain('wa.me/923702996795');
+    expect(contactLinks[1].href).toContain('wa.me/923222123145');
     expect(contactOptions?.textContent).not.toMatch(/\d/);
     expect(contactLinks[0].querySelector('use')?.getAttribute('href')).toBe('#whatsapp-symbol');
     expect(contactLinks[1].querySelector('use')?.getAttribute('href')).toBe('#whatsapp-symbol');
