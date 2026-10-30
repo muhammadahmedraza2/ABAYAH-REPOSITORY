@@ -287,13 +287,21 @@ export class CatalogHomeComponent {
       ? `\nPrice: ${product.price === null ? 'Please confirm' : this.formatPrice(product.price)}`
       : '';
     const color = product ? `\nColor: ${selectedColor?.name ?? 'Please confirm'}` : '';
+    const colorId = selectedColor ? `\nColor ID: ${selectedColor.id}` : '';
+    const photo = product
+      ? selectedColor?.images[0]
+        ? `\nPhoto: ${new URL(selectedColor.images[0], STORE_URL).toString()}`
+        : selectedColor
+          ? `\nPhoto: No real photo is available for ${selectedColor.name} yet.`
+          : `\nPhoto: ${new URL(product.image, STORE_URL).toString()}`
+      : '';
     const size = product ? `\nSize: ${selectedSize || 'Please confirm'}` : '';
     const availability =
       selectedColor?.inStock === false
         ? 'Please confirm whether this color is available again.'
         : 'Please confirm availability and delivery details.';
     const inquiry = product
-      ? `Hello! I am interested in an abaya from your website.\n\nProduct: ${product.name}\nProduct ID: ${product.id}${color}${size}${price}\nPage: ${STORE_URL}/product/${product.id}\n\n${availability}`
+      ? `Hello! I am interested in an abaya from your website.\n\nProduct: ${product.name}\nProduct ID: ${product.id}${color}${colorId}${size}${price}${photo}\nPage: ${STORE_URL}/product/${product.id}\n\n${availability}`
       : 'Hello! I would like to know more about your abaya collection. Please share the details.';
 
     return `https://wa.me/${contactNumber}?text=${encodeURIComponent(inquiry)}`;

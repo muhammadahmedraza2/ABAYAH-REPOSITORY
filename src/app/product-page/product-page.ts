@@ -234,12 +234,20 @@ export class ProductPageComponent {
 
   whatsappLink(product: Product): string {
     const detailsPage = `${STORE_URL}/product/${product.id}`;
+    const color = this.selectedColor();
+    const photo = color?.images[0]
+      ? `Photo: ${new URL(color.images[0], STORE_URL).toString()}`
+      : color
+        ? `Photo: No real photo is available for ${color.name} yet.`
+        : `Photo: ${new URL(product.image, STORE_URL).toString()}`;
     const details = [
       `Hello! I am interested in ${product.name}.`,
       `Product: ${product.name}`,
       `Price: ${product.price === null ? 'Please confirm' : `Rs. ${product.price}`}`,
       `Size: ${this.selectedSize() || 'Please confirm'}`,
-      `Colour: ${this.selectedColor()?.name ?? 'Please confirm'}`,
+      `Colour: ${color?.name ?? 'Please confirm'}`,
+      ...(color ? [`Color ID: ${color.id}`] : []),
+      photo,
       `Page: ${detailsPage}`,
     ].join('\n');
 

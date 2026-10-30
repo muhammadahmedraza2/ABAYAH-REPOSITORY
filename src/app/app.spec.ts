@@ -76,6 +76,9 @@ describe('CatalogHomeComponent', () => {
     expect(href).toContain('wa.me/923702996795');
     expect(message).toContain(`Product: ${product.name}`);
     expect(message).toContain('Color: Navy Blue');
+    expect(message).toContain('Color ID: navy');
+    expect(message).toContain('Photo: No real photo is available for Navy Blue yet.');
+    expect(message).not.toContain('/images/abaya-olive-set.png');
     expect(message).toContain('Size: M');
     expect(message).toContain('Price: Rs. 2,500');
     expect(message).toContain(`Page: https://aabroo-modern-modest-wear.vercel.app/product/${product.id}`);
@@ -153,6 +156,9 @@ describe('CatalogHomeComponent', () => {
     expect(fixture.componentInstance.gallerySlides()[0].label).toBe('Full set overview');
     expect(message).toContain('Size: Please confirm');
     expect(message).toContain('Colour: Please confirm');
+    expect(message).toContain(
+      'Photo: https://aabroo-modern-modest-wear.vercel.app/images/abaya-olive-set.png',
+    );
     expect(message).toContain('Page: https://aabroo-modern-modest-wear.vercel.app/product/1');
     expect(schema?.type).toBe('application/ld+json');
     expect(JSON.parse(schema?.textContent ?? '{}')['@type']).toBe('Product');
@@ -179,6 +185,12 @@ describe('CatalogHomeComponent', () => {
       .toContain('/images/abaya-olive-set.png');
     expect(compiled.querySelector<HTMLButtonElement>('.colour-option[aria-pressed="true"]')?.textContent)
       .toContain('Mehndi Green');
+    const orderLink = compiled.querySelector<HTMLAnchorElement>('.order-button');
+    const message = decodeURIComponent(orderLink?.href.split('text=')[1] ?? '');
+    expect(message).toContain('Color ID: mehndi-green');
+    expect(message).toContain(
+      'Photo: https://aabroo-modern-modest-wear.vercel.app/images/abaya-olive-set.png',
+    );
 
     const gallery = TestBed.createComponent(ProductGalleryComponent);
     gallery.componentRef.setInput('slides', PRODUCTS[0].imageSlides);
