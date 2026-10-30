@@ -1,3 +1,5 @@
+export type ProductCategory = 'abaya' | 'burqa' | 'hijab' | 'niqab';
+
 export interface ProductColor {
   id: string;
   name: string;
@@ -12,7 +14,11 @@ export interface Product {
   name: string;
   price: number | null;
   description: string;
-  category: string;
+  category: ProductCategory;
+  collectionLabel: string;
+  fabric: string | null;
+  careInstructions: string[];
+  images: string[];
   image: string;
   colors: ProductColor[];
   includedItems?: string[];

@@ -1,32 +1,34 @@
 import {
   AfterViewInit,
+  ChangeDetectionStrategy,
   Component,
   ElementRef,
-  EventEmitter,
-  HostListener,
-  Input,
-  Output,
   ViewChild,
+  inject,
+  input,
+  output,
 } from '@angular/core';
 
 @Component({
   selector: 'app-size-guide',
-  standalone: true,
   templateUrl: './size-guide.html',
   styleUrl: './size-guide.css',
+  changeDetection: ChangeDetectionStrategy.OnPush,
+  host: {
+    '(keydown)': 'keepTabFocusInside($event)',
+  },
 })
 export class SizeGuideComponent implements AfterViewInit {
   @ViewChild('closeButton') private closeButton?: ElementRef<HTMLButtonElement>;
-  @Input({ required: true }) whatsappHref!: string;
-  @Output() closed = new EventEmitter<void>();
+  readonly whatsappHref = input.required<string>();
+  readonly closed = output<void>();
 
-  constructor(private readonly elementRef: ElementRef<HTMLElement>) {}
+  private readonly elementRef = inject<ElementRef<HTMLElement>>(ElementRef);
 
   ngAfterViewInit(): void {
     this.closeButton?.nativeElement.focus();
   }
 
-  @HostListener('keydown', ['$event'])
   keepTabFocusInside(event: KeyboardEvent): void {
     if (event.key !== 'Tab') return;
 

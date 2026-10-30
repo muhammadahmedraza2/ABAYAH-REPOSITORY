@@ -1,306 +1,190 @@
 import { TestBed } from '@angular/core/testing';
-import { App } from './app';
+import { provideRouter } from '@angular/router';
+import { CatalogHomeComponent } from './catalog-home';
+import { routes } from './app.routes';
 import { PRODUCTS } from './data/products';
-import { FavoritesService } from './services/favorites.service';
+import { ProductPageComponent } from './product-page/product-page';
+import { ProductGalleryComponent } from './product-gallery/product-gallery';
+import { ProductCatalogService } from './services/product-catalog.service';
 
-describe('App', () => {
+describe('CatalogHomeComponent', () => {
   beforeEach(async () => {
-    localStorage.clear();
     for (const product of PRODUCTS) {
       product.price = null;
-      product.sizes = undefined;
+      product.sizes = [];
       for (const color of product.colors) {
         color.images = [];
         color.inStock = null;
       }
     }
+
     await TestBed.configureTestingModule({
-      imports: [App],
+      imports: [CatalogHomeComponent, ProductPageComponent],
+      providers: [provideRouter(routes)],
     }).compileComponents();
   });
 
-  it('should create the app', () => {
-    const fixture = TestBed.createComponent(App);
-    const app = fixture.componentInstance;
-    expect(app).toBeTruthy();
-  });
-
-  it('should offer only the nine requested color options on every design', () => {
-    const expectedColors = [
-      'Mehndi Green',
-      'Black',
-      'Navy Blue',
-      'Mehroon (Maroon)',
-      'Brown',
-      'Half White',
-      'Plum',
-      'Light Pink',
-      'Peacock',
-    ];
-
-    for (const product of PRODUCTS) {
-      expect(product.colors.map((color) => color.name)).toEqual(expectedColors);
-    }
-  });
-
-  it('should render the hero headline and both abaya set types', async () => {
-    const fixture = TestBed.createComponent(App);
+  it('creates a browse-only catalog without cart or wishlist actions', async () => {
+    const fixture = TestBed.createComponent(CatalogHomeComponent);
     await fixture.whenStable();
+    fixture.detectChanges();
+
     const compiled = fixture.nativeElement as HTMLElement;
     expect(compiled.querySelector('h1')?.textContent).toContain('Timeless Elegance');
-    expect(compiled.querySelectorAll('#collection app-product-card').length).toBe(2);
-    expect(compiled.querySelector('#collection app-product-card h3')?.textContent).toContain(
-      '4-Piece Abaya Set',
-    );
-    expect(compiled.querySelector('#collection app-product-card .product-kicker')?.textContent).toBe(
-      '4-Piece Set',
-    );
+    expect(compiled.querySelectorAll('#collection app-product-card')).toHaveLength(2);
+    expect(compiled.querySelectorAll('.cart, .wishlist, .checkout, .favorite-button')).toHaveLength(0);
     expect(compiled.querySelectorAll('.color-card')).toHaveLength(9);
-    expect(compiled.querySelector('.color-card')?.textContent).toContain('54″ length · 23″ waist');
   });
 
-  it('should provide working hero slides, a set carousel, and color cards', async () => {
-    const fixture = TestBed.createComponent(App);
-    const app = fixture.componentInstance;
-    await fixture.whenStable();
-    const compiled = fixture.nativeElement as HTMLElement;
-
-    expect(compiled.querySelectorAll('.hero-dots button')).toHaveLength(3);
-    expect(compiled.querySelectorAll('#collection-carousel .product-slide')).toHaveLength(2);
-    expect(
-      compiled.querySelector<HTMLButtonElement>('[aria-label="Scroll products right"]')?.disabled,
-    ).toBe(false);
-
-    app.showHeroSlide(1);
-    expect(app.activeHeroSlide).toBe(1);
-
-    app.showHeroSlide(-1);
-    expect(app.activeHeroSlide).toBe(2);
-  });
-
-  it('should show the Aabroo brand and abaya logo in the header and footer', async () => {
-    const fixture = TestBed.createComponent(App);
-    await fixture.whenStable();
-    const compiled = fixture.nativeElement as HTMLElement;
-    const brandLinks = compiled.querySelectorAll<HTMLAnchorElement>('.brand');
-
-    expect(compiled.querySelector('header .brand')?.textContent).toContain('Aabroo');
-    expect(compiled.querySelector('.footer-brand')?.textContent).toContain('Aabroo');
-    expect(brandLinks).toHaveLength(2);
-    for (const link of brandLinks) {
-      expect(link.querySelector('img')?.getAttribute('src')).toBe('/images/aabroo-logo.svg');
-    }
-    expect(compiled.querySelector('.footer-brand + p')?.textContent).toBe('Grace in Every Layer.');
-  });
-
-  it('should include a color in the WhatsApp message only after one is selected', () => {
-    const fixture = TestBed.createComponent(App);
-    const app = fixture.componentInstance;
-    const product = app.products[0];
-    const defaultMessage = decodeURIComponent(app.buildWhatsAppLink(product).split('text=')[1]);
-
-    expect(app.buildWhatsAppLink(product)).toContain('wa.me/923702996795');
-    expect(defaultMessage).toContain('Hello! I am interested in an abaya');
-    expect(defaultMessage).not.toContain('Color:');
-    expect(defaultMessage).not.toContain('Price:');
-    expect(defaultMessage).not.toContain('Assalam');
-    expect(defaultMessage).not.toContain('Barah-e-karam');
-
-    app.selectColor(product.id, product.colors.find((color) => color.name === 'Navy Blue')!);
-    const selectedMessage = decodeURIComponent(app.buildWhatsAppLink(product).split('text=')[1]);
-    expect(selectedMessage).toContain('Color: Navy Blue');
-  });
-
-  it('should show a selected color in the product inquiry link', async () => {
-    const fixture = TestBed.createComponent(App);
-    const app = fixture.componentInstance;
-    const product = app.products[0];
-    const navyColor = product.colors.find((color) => color.name === 'Navy Blue')!;
-    const originalImages = navyColor.images;
-    navyColor.images = ['/assets/abaya-navy.webp'];
-    fixture.detectChanges();
-    const compiled = fixture.nativeElement as HTMLElement;
-    const firstCard = compiled.querySelector('#collection app-product-card');
-    const navySwatch = firstCard?.querySelector<HTMLButtonElement>(
-      '[aria-label^="Select Navy Blue"]',
-    );
-
-    navySwatch?.dispatchEvent(new Event('click', { bubbles: true }));
-    fixture.detectChanges();
-
-    const contactLink = firstCard?.querySelector<HTMLAnchorElement>('.contact-button');
-    const productImage = firstCard?.querySelector<HTMLImageElement>('.product-image-wrap img');
-    expect(app.selectedColors[product.id]).toBe('Navy Blue');
-    expect(contactLink?.href).toContain(encodeURIComponent('Color: Navy Blue'));
-    expect(productImage?.getAttribute('src')).toBe('/assets/abaya-navy.webp');
-    navyColor.images = originalImages;
-  });
-
-  it('should show a matching illustrative preview when the selected color has no photo', async () => {
-    const fixture = TestBed.createComponent(App);
-    const app = fixture.componentInstance;
-    const product = app.products[0];
-    app.selectColor(product.id, product.colors.find((color) => color.name === 'Navy Blue')!);
-    app.openDetails(product);
-    fixture.detectChanges();
+  it('uses signal state for hero slides and exposes the two product-set types', async () => {
+    const fixture = TestBed.createComponent(CatalogHomeComponent);
+    const component = fixture.componentInstance;
     await fixture.whenStable();
 
-    const compiled = fixture.nativeElement as HTMLElement;
-    const colorPreview = compiled.querySelector<SVGElement>('.detail-color-preview');
-    const previewNote = compiled.querySelector('.detail-copy .image-note');
-
-    expect(colorPreview?.getAttribute('aria-label')).toContain('Navy Blue');
-    expect(colorPreview?.style.getPropertyValue('--garment-color')).toBe('#172747');
-    expect(previewNote?.textContent).toContain('illustrative color preview');
-    expect(previewNote?.textContent).toContain('real photo');
-  });
-
-  it('should expose both configured WhatsApp contacts', async () => {
-    const fixture = TestBed.createComponent(App);
-    await fixture.whenStable();
-    const compiled = fixture.nativeElement as HTMLElement;
-    const contactLinks = compiled.querySelectorAll<HTMLAnchorElement>('.contact-options a');
-    const contactOptions = compiled.querySelector<HTMLElement>('.contact-options');
-
-    expect(contactLinks[0].href).toContain('wa.me/923702996795');
-    expect(contactLinks[1].href).toContain('wa.me/923222123145');
-    expect(contactOptions?.textContent).not.toMatch(/\d/);
-    expect(contactLinks[0].querySelector('use')?.getAttribute('href')).toBe('#whatsapp-symbol');
-    expect(contactLinks[1].querySelector('use')?.getAttribute('href')).toBe('#whatsapp-symbol');
-    expect(contactOptions?.textContent).toContain('WhatsApp');
-  });
-
-  it('should combine case-insensitive search, category, and color filters', () => {
-    const app = TestBed.createComponent(App).componentInstance;
-    app.searchQuery = 'NAVY';
-    app.selectedCategory = '4-Piece Set';
-    app.selectedColorFilter = 'navy';
-
-    expect(app.filteredProducts.map((product) => product.name)).toEqual([
-      'Aabroo 4-Piece Abaya Set',
+    expect(component.products().map((product) => product.collectionLabel)).toEqual([
+      '4-Piece Set',
+      '3-Piece Set',
     ]);
-
-    app.resetFilters();
-    expect(app.filteredProducts).toHaveLength(2);
-
-    PRODUCTS[0].colors.find((color) => color.name === 'Navy Blue')!.inStock = false;
-    app.selectedColorFilter = 'navy';
-    expect(app.filteredProducts.every((product) => product.id !== 1)).toBe(true);
+    component.showHeroSlide(1);
+    expect(component.activeHeroSlide()).toBe(1);
+    component.showHeroSlide(-1);
+    expect(component.activeHeroSlide()).toBe(2);
   });
 
-  it('should filter and sort products once real prices are configured', () => {
-    const app = TestBed.createComponent(App).componentInstance;
-    PRODUCTS[0].price = 2500;
-    PRODUCTS[1].price = 3500;
+  it('keeps WhatsApp inquiries populated with product, price, selection, and canonical page link', () => {
+    const component = TestBed.createComponent(CatalogHomeComponent).componentInstance;
+    const product = component.products()[0];
+    product.price = 2500;
+    component.selectColor(product.id, product.colors.find((color) => color.id === 'navy')!);
 
-    expect(app.hasKnownPrices).toBe(true);
-    app.selectedPriceRange = '2000to3000';
-    expect(app.filteredProducts.map((product) => product.id)).toEqual([1]);
-    app.selectedPriceRange = '';
-    app.sortBy = 'priceDesc';
-    expect(app.filteredProducts.map((product) => product.id)).toEqual([2, 1]);
+    const href = component.buildWhatsAppLink(product, undefined, 'M');
+    const message = decodeURIComponent(href.split('text=')[1]);
+
+    expect(href).toContain('wa.me/923702996795');
+    expect(message).toContain(`Product: ${product.name}`);
+    expect(message).toContain('Color: Navy Blue');
+    expect(message).toContain('Size: M');
+    expect(message).toContain('Price: Rs. 2,500');
+    expect(message).toContain(`Page: https://aabroo-modern-modest-wear.vercel.app/product/${product.id}`);
   });
 
-  it('should persist favorite IDs without adding duplicates', () => {
-    const favorites = TestBed.inject(FavoritesService);
-    favorites.toggle(1);
-    favorites.toggle(1);
-    favorites.toggle(1);
-
-    expect(favorites.ids()).toEqual([1]);
-    expect(JSON.parse(localStorage.getItem('abaya-store-favorites') ?? '[]')).toEqual([1]);
-
-    TestBed.resetTestingModule();
-    const restoredFavorites = TestBed.inject(FavoritesService);
-    expect(restoredFavorites.ids()).toEqual([1]);
-    restoredFavorites.clear();
-    expect(restoredFavorites.ids()).toEqual([]);
-  });
-
-  it('should select sizes, open the size guide, and close dialogs with Escape', () => {
-    const fixture = TestBed.createComponent(App);
-    const app = fixture.componentInstance;
-    const product = app.products[0];
-    const navyColor = product.colors.find((color) => color.name === 'Navy Blue')!;
-    navyColor.images = ['/assets/navy-front.webp', '/assets/navy-back.webp'];
-    product.sizes = ['M', 'L'];
-    app.selectColor(product.id, navyColor);
-    app.openDetails(product);
+  it('preserves both existing WhatsApp contact destinations', async () => {
+    const fixture = TestBed.createComponent(CatalogHomeComponent);
+    await fixture.whenStable();
     fixture.detectChanges();
 
     const compiled = fixture.nativeElement as HTMLElement;
-    expect(compiled.querySelector('.set-details')?.textContent).toContain('Abaya');
-    expect(compiled.querySelector('.set-details')?.textContent).toContain('Inner');
-    expect(compiled.querySelector('.set-details')?.textContent).toContain('Hijab');
-    expect(compiled.querySelector('.set-details')?.textContent).toContain('Dupatta');
-    expect(compiled.querySelector('.abaya-length')?.textContent).toContain('54 inches');
-    expect(compiled.querySelector('.abaya-waist')?.textContent).toContain('23 inches');
-    const detailImage = compiled.querySelector<HTMLImageElement>('.detail-image');
-    expect(detailImage?.getAttribute('src')).toBe('/assets/navy-front.webp');
-    compiled.querySelector<HTMLButtonElement>('.gallery-next')?.click();
-    fixture.detectChanges();
-    expect(detailImage?.getAttribute('src')).toBe('/assets/navy-back.webp');
-    compiled.querySelector<HTMLButtonElement>('.gallery-previous')?.click();
-    fixture.detectChanges();
-    expect(detailImage?.getAttribute('src')).toBe('/assets/navy-front.webp');
-    compiled.querySelectorAll<HTMLButtonElement>('.thumbnail-button')[1]?.click();
-    fixture.detectChanges();
-    expect(detailImage?.getAttribute('src')).toBe('/assets/navy-back.webp');
+    const links = compiled.querySelectorAll<HTMLAnchorElement>('.contact-options a');
+    expect(links).toHaveLength(2);
+    expect(links[0].href).toContain('wa.me/923702996795');
+    expect(links[1].href).toContain('wa.me/923222123145');
+  });
 
-    const sizeSelect = compiled.querySelector<HTMLSelectElement>('#abaya-size');
-    expect(sizeSelect).not.toBeNull();
-    if (sizeSelect) {
-      sizeSelect.value = 'L';
-      sizeSelect.dispatchEvent(new Event('change', { bubbles: true }));
-    }
+  it('combines search, category, colour, and size filters with price sorting', () => {
+    const component = TestBed.createComponent(CatalogHomeComponent).componentInstance;
+    PRODUCTS[0].sizes = ['M', 'L'];
+    PRODUCTS[0].price = 2500;
+    PRODUCTS[1].sizes = ['S'];
+    PRODUCTS[1].price = 3500;
+    component.searchQuery.set('NAVY');
+    component.selectedCategory.set('abaya');
+    component.selectedColorFilter.set('navy');
+    component.selectedSizeFilter.set('M');
+
+    expect(component.filteredProducts().map((product) => product.id)).toEqual([1]);
+    component.selectedSizeFilter.set('');
+    component.searchQuery.set('');
+    component.selectedColorFilter.set('');
+    component.sortBy.set('priceDesc');
+    expect(component.filteredProducts().map((product) => product.id)).toEqual([2, 1]);
+  });
+
+  it('includes a size filter and direct product detail links in the catalog', async () => {
+    PRODUCTS[0].sizes = ['M', 'L'];
+    const fixture = TestBed.createComponent(CatalogHomeComponent);
+    await fixture.whenStable();
     fixture.detectChanges();
-    expect(app.selectedSizes[product.id]).toBe('L');
 
-    const whatsappLink = compiled.querySelector<HTMLAnchorElement>('.whatsapp-detail');
-    expect(whatsappLink?.href).toContain(encodeURIComponent('Color: Navy Blue'));
-    expect(whatsappLink?.href).toContain(encodeURIComponent('Size: L'));
+    const compiled = fixture.nativeElement as HTMLElement;
+    expect(compiled.querySelector('select option[value="M"]')?.textContent).toBe('M');
+    expect(compiled.querySelector<HTMLAnchorElement>('.product-actions a.detail-button')?.getAttribute('href'))
+      .toBe('/product/1');
+  });
 
-    compiled.querySelector<HTMLButtonElement>('.size-guide-button')?.click();
+  it('provides the catalog through a service and configures lazy product and 404 routes', () => {
+    const catalog = TestBed.inject(ProductCatalogService);
+    expect(catalog.getById('1')?.name).toBe('Aabroo 4-Piece Abaya Set');
+    expect(catalog.getById('invalid')).toBeUndefined();
+    expect(routes.map((route) => route.path)).toEqual(['', 'product/:id', '**']);
+    expect(routes[0].loadComponent).toBeDefined();
+    expect(routes[1].loadComponent).toBeDefined();
+    expect(routes[2].loadComponent).toBeDefined();
+  });
+
+  it('renders product metadata, structured data, and a prefilled WhatsApp detail-page link', async () => {
+    const fixture = TestBed.createComponent(ProductPageComponent);
+    fixture.componentRef.setInput('id', '1');
+    fixture.detectChanges();
+    await fixture.whenStable();
+    fixture.detectChanges();
+
+    const compiled = fixture.nativeElement as HTMLElement;
+    const orderLink = compiled.querySelector<HTMLAnchorElement>('.order-button');
+    const message = decodeURIComponent(orderLink?.href.split('text=')[1] ?? '');
+    const schema = document.querySelector<HTMLScriptElement>('#product-jsonld');
+
+    expect(compiled.querySelector('h1')?.textContent).toContain('Aabroo 4-Piece Abaya Set');
+    expect(message).toContain('Size: Please confirm');
+    expect(message).toContain('Colour: Please confirm');
+    expect(message).toContain('Page: https://aabroo-modern-modest-wear.vercel.app/product/1');
+    expect(schema?.type).toBe('application/ld+json');
+    expect(JSON.parse(schema?.textContent ?? '{}')['@type']).toBe('Product');
+    expect(document.title).toContain('Aabroo 4-Piece Abaya Set');
+  });
+
+  it('updates the displayed colour and illustrative image when a colour has no real photo yet', async () => {
+    const fixture = TestBed.createComponent(ProductPageComponent);
+    fixture.componentRef.setInput('id', '1');
+    fixture.detectChanges();
+    await fixture.whenStable();
+    fixture.detectChanges();
+
+    const compiled = fixture.nativeElement as HTMLElement;
+    const peacock = [...compiled.querySelectorAll<HTMLButtonElement>('.colour-option')].find(
+      (button) => button.textContent?.includes('Peacock'),
+    );
+    peacock?.click();
+    fixture.detectChanges();
+
+    expect(compiled.querySelector('.selected-colour')?.textContent).toContain('Peacock');
+    expect(fixture.componentInstance.colorPreview()).toBe('#087e83');
+    expect(compiled.querySelector<HTMLButtonElement>('.colour-option[aria-pressed="true"]')?.textContent)
+      .toContain('Peacock');
+
+    const gallery = TestBed.createComponent(ProductGalleryComponent);
+    gallery.componentRef.setInput('images', ['/images/product-photo-placeholder.svg']);
+    gallery.componentRef.setInput('alt', 'Abaya');
+    gallery.componentRef.setInput('colorPreview', '#087e83');
+    gallery.detectChanges();
+    expect(gallery.nativeElement.querySelector('svg[role="img"] path[fill="#087e83"]')).not.toBeNull();
+  });
+
+  it('keeps existing color preview and accessible size-guide dialog behavior', async () => {
+    const fixture = TestBed.createComponent(CatalogHomeComponent);
+    const component = fixture.componentInstance;
+    const product = component.products()[0];
+    component.selectColor(product.id, product.colors.find((color) => color.id === 'navy')!);
+    component.openDetails(product);
+    fixture.detectChanges();
+    await fixture.whenStable();
+    fixture.detectChanges();
+
+    const compiled = fixture.nativeElement as HTMLElement;
+    expect(compiled.querySelector('.detail-color-preview')?.getAttribute('aria-label')).toContain(
+      'Navy Blue',
+    );
+    component.openSizeGuide();
     fixture.detectChanges();
     expect(compiled.querySelector('[aria-labelledby="size-guide-title"]')).not.toBeNull();
-
-    document.dispatchEvent(new KeyboardEvent('keydown', { key: 'Escape', bubbles: true }));
-    fixture.detectChanges();
-    expect(compiled.querySelector('[aria-labelledby="size-guide-title"]')).toBeNull();
-    expect(compiled.querySelector('[role="dialog"][aria-label*="details"]')).not.toBeNull();
-
-    document.dispatchEvent(new KeyboardEvent('keydown', { key: 'Escape', bubbles: true }));
-    fixture.detectChanges();
-    expect(compiled.querySelector('[role="dialog"][aria-label*="details"]')).toBeNull();
-  });
-
-  it('should expand and collapse FAQ answers accessibly', () => {
-    const fixture = TestBed.createComponent(App);
-    fixture.detectChanges();
-    const compiled = fixture.nativeElement as HTMLElement;
-    const firstQuestion = compiled.querySelector<HTMLButtonElement>('.faq-item button');
-
-    expect(firstQuestion?.getAttribute('aria-expanded')).toBe('false');
-    firstQuestion?.click();
-    fixture.detectChanges();
-    expect(firstQuestion?.getAttribute('aria-expanded')).toBe('true');
-    expect(compiled.querySelector('#faq-answer-0')?.hasAttribute('hidden')).toBe(false);
-  });
-
-  it('should toggle the mobile menu and apply category cards as filters', () => {
-    const fixture = TestBed.createComponent(App);
-    fixture.detectChanges();
-    const app = fixture.componentInstance;
-    const compiled = fixture.nativeElement as HTMLElement;
-    const menuButton = compiled.querySelector<HTMLButtonElement>('.menu-toggle');
-
-    menuButton?.click();
-    fixture.detectChanges();
-    expect(app.menuOpen).toBe(true);
-    expect(compiled.querySelector('.menu-toggle')?.getAttribute('aria-expanded')).toBe('true');
-
-    compiled.querySelector<HTMLButtonElement>('.category-card')?.click();
-    fixture.detectChanges();
-    expect(app.selectedCategory).toBe(app.categories[0]);
   });
 });

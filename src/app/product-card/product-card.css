@@ -55,20 +55,6 @@
   text-transform: uppercase;
 }
 
-.favorite-button {
-  position: absolute;
-  top: 12px;
-  right: 12px;
-  width: 40px;
-  height: 40px;
-  border: 0;
-  border-radius: 50%;
-  background: #fffdfa;
-  color: #49372b;
-  font-size: 1.35rem;
-  line-height: 1;
-}
-
 .product-content {
   padding: 20px;
 }
@@ -199,8 +185,9 @@ h3 {
 }
 
 .contact-button {
-  background: #241b17;
-  color: #fff;
+  border: 1px solid #d5c7ba;
+  background: #f1e9df;
+  color: #291f19;
 }
 
 .detail-button:hover,
@@ -209,6 +196,6 @@ h3 {
 }
 
 .contact-button:hover {
-  background: #4a392f;
-  color: #fff;
+  background: #e8dccf;
+  color: #211a16;
 }

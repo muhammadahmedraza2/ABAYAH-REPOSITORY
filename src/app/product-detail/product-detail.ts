@@ -1,68 +1,71 @@
-import { DecimalPipe } from '@angular/common';
+import { DecimalPipe, NgOptimizedImage } from '@angular/common';
 import {
   AfterViewInit,
+  ChangeDetectionStrategy,
   Component,
+  computed,
   ElementRef,
-  EventEmitter,
-  Input,
-  Output,
   ViewChild,
   inject,
+  input,
+  output,
+  signal,
 } from '@angular/core';
 import { Product, ProductColor } from '../models/product';
 
 @Component({
   selector: 'app-product-detail',
-  standalone: true,
-  imports: [DecimalPipe],
+  imports: [DecimalPipe, NgOptimizedImage],
   templateUrl: './product-detail.html',
   styleUrl: './product-detail.css',
   host: {
     '(keydown)': 'keepTabFocusInside($event)',
   },
+  changeDetection: ChangeDetectionStrategy.OnPush,
 })
 export class ProductDetailComponent implements AfterViewInit {
   private readonly elementRef = inject<ElementRef<HTMLElement>>(ElementRef);
   @ViewChild('closeButton') private closeButton?: ElementRef<HTMLButtonElement>;
-  @Input({ required: true }) product!: Product;
-  @Input() selectedColorName: string | undefined;
-  @Input() selectedSize = '';
-  @Input({ required: true }) whatsappHref!: string;
-  @Output() colorSelected = new EventEmitter<ProductColor>();
-  @Output() sizeSelected = new EventEmitter<string>();
-  @Output() sizeGuideRequested = new EventEmitter<void>();
-  @Output() closed = new EventEmitter<void>();
+  readonly product = input.required<Product>();
+  readonly selectedColorName = input<string | undefined>();
+  readonly selectedSize = input('');
+  readonly whatsappHref = input.required<string>();
+  readonly colorSelected = output<ProductColor>();
+  readonly sizeSelected = output<string>();
+  readonly sizeGuideRequested = output<void>();
+  readonly closed = output<void>();
 
-  selectedImageIndex = 0;
+  readonly selectedImageIndex = signal(0);
 
   ngAfterViewInit(): void {
     this.closeButton?.nativeElement.focus();
   }
 
-  get selectedColor(): ProductColor | undefined {
-    return this.product.colors.find((color) => color.name === this.selectedColorName);
-  }
+  readonly selectedColor = computed(() =>
+    this.product().colors.find((color) => color.name === this.selectedColorName()),
+  );
+  readonly selectedColorImageCount = computed(() => this.selectedColor()?.images.length ?? 0);
 
-  get currentImage(): string {
-    return this.selectedColor?.images[this.selectedImageIndex] ?? this.product.image;
-  }
+  readonly currentImage = computed(
+    () => this.selectedColor()?.images[this.selectedImageIndex()] ?? this.product().image,
+  );
 
   selectColor(color: ProductColor): void {
-    this.selectedImageIndex = 0;
+    this.selectedImageIndex.set(0);
     this.colorSelected.emit(color);
   }
 
   showPreviousImage(): void {
-    const imageCount = this.selectedColor?.images.length ?? 0;
+    const imageCount = this.selectedColor()?.images.length ?? 0;
     if (imageCount > 1) {
-      this.selectedImageIndex = (this.selectedImageIndex - 1 + imageCount) % imageCount;
+      this.selectedImageIndex.update((index) => (index - 1 + imageCount) % imageCount);
     }
   }
 
   showNextImage(): void {
-    const imageCount = this.selectedColor?.images.length ?? 0;
+    const imageCount = this.selectedColor()?.images.length ?? 0;
     if (imageCount > 1) {
-      this.selectedImageIndex = (this.selectedImageIndex + 1) % imageCount;
+      this.selectedImageIndex.update((index) => (index + 1) % imageCount);
     }
   }
 

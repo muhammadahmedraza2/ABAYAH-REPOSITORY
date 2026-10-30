@@ -3,7 +3,7 @@
     class="detail-dialog container"
     role="dialog"
     aria-modal="true"
-    [attr.aria-label]="product.name + ' details'"
+    [attr.aria-label]="product().name + ' details'"
     (click)="$event.stopPropagation()"
   >
     <button
@@ -18,15 +18,15 @@
     <div class="row g-4 align-items-center">
       <div class="col-12 col-md-6">
         <div class="detail-gallery">
-          @if (selectedColor && selectedColor.images.length === 0) {
+          @if (selectedColorImageCount() === 0) {
             <svg
               class="detail-image detail-color-preview"
               viewBox="0 0 800 1000"
               role="img"
               [attr.aria-label]="
-                'Illustrative ' + selectedColor.name + ' color preview for ' + product.name
+                'Illustrative ' + selectedColor()?.name + ' color preview for ' + product().name
               "
-              [style.--garment-color]="selectedColor.hex"
+              [style.--garment-color]="selectedColor()?.hex"
               focusable="false"
             >
               <rect width="800" height="1000" fill="#e9e1d7" />
@@ -54,17 +54,17 @@
           } @else {
             <img
               class="detail-image"
-              [src]="currentImage"
+              [ngSrc]="currentImage()"
               [alt]="
-                product.image.includes('placeholder')
-                  ? 'Product photo placeholder for ' + product.name
-                  : product.name + ' abaya design'
+                product().image.includes('placeholder')
+                  ? 'Product photo placeholder for ' + product().name
+                  : product().name + ' abaya design'
               "
               width="900"
               height="1125"
             />
           }
-          @if (selectedColor && selectedColor.images.length > 1) {
+          @if (selectedColorImageCount() > 1) {
             <button
               class="gallery-arrow gallery-previous"
               type="button"
@@ -83,7 +83,7 @@
             </button>
           }
         </div>
-        @if (selectedColor; as color) {
+        @if (selectedColor(); as color) {
           <p
             class="stock-status"
             [class.stock-status-out]="color.inStock === false"
@@ -103,13 +103,13 @@
                 <button
                   class="thumbnail-button"
                   type="button"
-                  [class.active]="selectedImageIndex === index"
+                  [class.active]="selectedImageIndex() === index"
                   [attr.aria-label]="'Show image ' + (index + 1)"
-                  (click)="selectedImageIndex = index"
+                  (click)="selectedImageIndex.set(index)"
                 >
                   <img
-                    [src]="image"
-                    [alt]="product.name + ' view ' + (index + 1)"
+                    [ngSrc]="image"
+                    [alt]="product().name + ' view ' + (index + 1)"
                     width="80"
                     height="100"
                   />
@@ -121,14 +121,14 @@
       </div>
       <div class="col-12 col-md-6 detail-copy">
         <p class="detail-eyebrow">Collection details</p>
-        <h2>{{ product.name }}</h2>
-        @if (product.price !== null) {
-          <p class="detail-price">Rs. {{ product.price | number: '1.0-0' }}</p>
+        <h2>{{ product().name }}</h2>
+        @if (product().price !== null) {
+          <p class="detail-price">Rs. {{ product().price | number: '1.0-0' }}</p>
         } @else {
           <p class="detail-price">Price on request</p>
         }
-        <p class="description">{{ product.description }}</p>
-        @if (product.includedItems; as includedItems) {
+        <p class="description">{{ product().description }}</p>
+        @if (product().includedItems; as includedItems) {
           <section class="set-details" aria-label="Set details">
             <h3>Included in this set</h3>
             <ul>
@@ -138,20 +138,20 @@
             </ul>
           </section>
         }
-        @if (product.lengthInches; as lengthInches) {
+        @if (product().lengthInches; as lengthInches) {
           <p class="abaya-length">Abaya length: {{ lengthInches }} inches</p>
         }
-        @if (product.waistInches; as waistInches) {
+        @if (product().waistInches; as waistInches) {
           <p class="abaya-waist">Waist: {{ waistInches }} inches</p>
         }
         <h3>Choose a color</h3>
         <div class="color-options">
-          @for (color of product.colors; track color.name) {
+          @for (color of product().colors; track color.name) {
             <button
               class="color-option"
               type="button"
-              [class.active]="selectedColorName === color.name"
-              [attr.aria-pressed]="selectedColorName === color.name"
+              [class.active]="selectedColorName() === color.name"
+              [attr.aria-pressed]="selectedColorName() === color.name"
               (click)="selectColor(color)"
             >
               <span class="color-dot" [style.--swatch-color]="color.hex"></span>
@@ -162,7 +162,7 @@
             </button>
           }
         </div>
-        @if (selectedColor; as color) {
+        @if (selectedColor(); as color) {
           <p class="selected-color">
             Selected color: <strong>{{ color.name }}</strong>
           </p>
@@ -175,12 +175,12 @@
         } @else {
           <p class="selected-color">No color selected yet.</p>
         }
-        @if (product.sizes; as sizes) {
+        @if (product().sizes; as sizes) {
           <label class="size-label" for="abaya-size">Choose size (optional)</label>
           <select
             id="abaya-size"
             class="size-select"
-            [value]="selectedSize"
+            [value]="selectedSize()"
             (change)="onSizeChange($event)"
           >
             <option value="">Ask about available sizes</option>
@@ -194,7 +194,7 @@
         <button class="size-guide-button" type="button" (click)="sizeGuideRequested.emit()">
           Size Guide
         </button>
-        <a class="whatsapp-detail" [href]="whatsappHref" target="_blank" rel="noopener noreferrer">
+        <a class="whatsapp-detail whatsapp-contact" [href]="whatsappHref()" target="_blank" rel="noopener noreferrer">
           <svg class="whatsapp-icon" aria-hidden="true" focusable="false">
             <use href="#whatsapp-symbol"></use>
           </svg>

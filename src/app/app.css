@@ -367,7 +367,6 @@ app-root {
   gap: 12px;
   margin: 0 0 22px;
 }
-.favorites-filter,
 .text-action {
   min-height: 36px;
   padding: 0 12px;
@@ -376,11 +375,6 @@ app-root {
   background: transparent;
   color: #49372b;
   font-size: 0.78rem;
-}
-.favorites-filter.active {
-  border-color: #49372b;
-  background: #49372b;
-  color: #fff;
 }
 .text-action {
   border: 0;
@@ -707,16 +701,40 @@ app-root {
   gap: 8px;
   padding: 0 19px;
   border-radius: 28px;
-  background: #287c4a;
-  color: #fff;
+  border: 1px solid #d5c7ba;
+  background: #f1e9df;
+  color: #291f19;
   font-size: 0.83rem;
   font-weight: 600;
   text-decoration: none;
-  box-shadow: 0 8px 22px #182a1d33;
+  box-shadow: 0 8px 22px #291f1926;
 }
 .floating-whatsapp:hover {
-  background: #1f6139;
-  color: #fff;
+  background: #e8dccf;
+  color: #211a16;
+}
+.whatsapp-contact,
+.header-contact {
+  border-color: #d5c7ba;
+  background: #f1e9df;
+  color: #291f19;
+}
+.whatsapp-contact:hover,
+.header-contact:hover {
+  background: #e8dccf;
+  color: #211a16;
+}
+.whatsapp-contact .whatsapp-icon,
+.header-contact .whatsapp-icon,
+.floating-whatsapp .whatsapp-icon {
+  width: 1.35rem;
+  height: 1.35rem;
+  color: #236b43;
+}
+.whatsapp-contact:focus-visible,
+.header-contact:focus-visible,
+.floating-whatsapp:focus-visible {
+  outline-color: #236b43;
 }
 @media (min-width: 768px) and (max-width: 991.98px) {
   .header-inner {

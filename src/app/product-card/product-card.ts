@@ -1,24 +1,23 @@
-import { DecimalPipe } from '@angular/common';
-import { Component, EventEmitter, Input, Output } from '@angular/core';
+import { DecimalPipe, NgOptimizedImage } from '@angular/common';
+import { ChangeDetectionStrategy, Component, input, output } from '@angular/core';
+import { RouterLink } from '@angular/router';
 import { Product, ProductColor } from '../models/product';
 
 @Component({
   selector: 'app-product-card',
-  standalone: true,
-  imports: [DecimalPipe],
+  imports: [DecimalPipe, NgOptimizedImage, RouterLink],
   templateUrl: './product-card.html',
   styleUrl: './product-card.css',
+  changeDetection: ChangeDetectionStrategy.OnPush,
 })
 export class ProductCardComponent {
-  @Input({ required: true }) product!: Product;
-  @Input() selectedColorName: string | undefined;
-  @Input({ required: true }) whatsappHref!: string;
-  @Input() isFavorite = false;
-  @Output() colorSelected = new EventEmitter<ProductColor>();
-  @Output() detailsRequested = new EventEmitter<void>();
-  @Output() favoriteToggled = new EventEmitter<void>();
+  readonly product = input.required<Product>();
+  readonly selectedColorName = input<string | undefined>();
+  readonly whatsappHref = input.required<string>();
+  readonly colorSelected = output<ProductColor>();
+  readonly detailsRequested = output<void>();
 
   get selectedColor(): ProductColor | undefined {
-    return this.product.colors.find((color) => color.name === this.selectedColorName);
+    return this.product().colors.find((color) => color.name === this.selectedColorName());
   }
 }

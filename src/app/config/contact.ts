@@ -6,6 +6,8 @@ export const WHATSAPP_CONTACTS = [
   { number: SECOND_WHATSAPP_NUMBER },
 ] as const;
 
+export const STORE_URL = 'https://aabroo-modern-modest-wear.vercel.app';
+
 export const STORE_CONFIG = {
   brandName: 'Aabroo',
   tagline: 'Grace in Every Layer.',

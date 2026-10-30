@@ -247,14 +247,16 @@ h3 {
   min-height: 48px;
   border: 0;
   border-radius: 28px;
-  background: #241b17;
-  color: #fff;
+  border: 1px solid #d5c7ba;
+  background: #f1e9df;
+  color: #291f19;
   font-weight: 600;
   text-decoration: none;
 }
 
 .whatsapp-detail:hover {
-  background: #4a392f;
+  background: #e8dccf;
+  color: #211a16;
 }
 
 .image-thumbnails {

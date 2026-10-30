@@ -1,56 +1,40 @@
 <article class="product-card h-100">
   <div class="product-image-wrap">
     <img
-      [src]="selectedColor?.images?.[0] || product.image"
+      [ngSrc]="selectedColor?.images?.[0] || product().image"
       [alt]="
-        product.image.includes('placeholder')
-          ? 'Product photo placeholder for ' + product.name
-          : product.name + ' design'
+        product().image.includes('placeholder')
+          ? 'Product photo placeholder for ' + product().name
+          : product().name + ' design'
       "
       width="600"
       height="750"
-      loading="lazy"
-      decoding="async"
     />
-    @if (product.isNewArrival) {
+    @if (product().isNewArrival) {
       <span class="arrival-badge">New arrival</span>
     }
-    @if (product.isBestSeller) {
+    @if (product().isBestSeller) {
       <span class="bestseller-badge">Best seller</span>
     }
-    <button
-      class="favorite-button"
-      type="button"
-      [attr.aria-pressed]="isFavorite"
-      [attr.aria-label]="
-        (isFavorite ? 'Remove ' : 'Add ') +
-        product.name +
-        (isFavorite ? ' from' : ' to') +
-        ' favorites'
-      "
-      (click)="favoriteToggled.emit()"
-    >
-      {{ isFavorite ? '♥' : '♡' }}
-    </button>
   </div>
   <div class="product-content">
-    <p class="product-kicker">{{ product.category }}</p>
-    <h3>{{ product.name }}</h3>
+    <p class="product-kicker">{{ product().collectionLabel }}</p>
+    <h3>{{ product().name }}</h3>
     <p class="product-price">
-      @if (product.price !== null) {
-        Rs. {{ product.price | number: '1.0-0' }}
+      @if (product().price !== null) {
+        Rs. {{ product().price | number: '1.0-0' }}
       } @else {
         <span>Price on request</span>
       }
     </p>
-    <p class="product-description">{{ product.description }}</p>
-    @if (product.includedItems; as includedItems) {
+    <p class="product-description">{{ product().description }}</p>
+    @if (product().includedItems; as includedItems) {
       <p class="product-set-items">{{ includedItems.join(' · ') }}</p>
     }
-    @if (product.lengthInches && product.waistInches) {
+    @if (product().lengthInches && product().waistInches) {
       <p class="product-measurements">
-        Length: {{ product.lengthInches }}″ <span aria-hidden="true">·</span>
-        Waist: {{ product.waistInches }}″
+        Length: {{ product().lengthInches }}″ <span aria-hidden="true">·</span>
+        Waist: {{ product().waistInches }}″
       </p>
     }
     <div class="swatch-heading">
@@ -62,12 +46,12 @@
       }
     </div>
     <div class="swatches" aria-label="Choose a color">
-      @for (color of product.colors; track color.name) {
+      @for (color of product().colors; track color.name) {
         <button
           class="color-swatch"
           type="button"
           [style.--swatch-color]="color.hex"
-          [class.selected]="selectedColorName === color.name"
+          [class.selected]="selectedColorName() === color.name"
           [attr.aria-label]="
             'Select ' +
             color.name +
@@ -77,7 +61,7 @@
                 ? ', availability unconfirmed'
                 : '')
           "
-          [attr.aria-pressed]="selectedColorName === color.name"
+          [attr.aria-pressed]="selectedColorName() === color.name"
           [title]="
             color.name +
             (color.inStock === false
@@ -107,7 +91,8 @@
       <button class="btn detail-button" type="button" (click)="detailsRequested.emit()">
         View Details
       </button>
-      <a class="contact-button" [href]="whatsappHref" target="_blank" rel="noopener noreferrer">
+      <a class="detail-button" [routerLink]="['/product', product().id]">Full product page</a>
+      <a class="contact-button whatsapp-contact" [href]="whatsappHref()" target="_blank" rel="noopener noreferrer">
         <svg class="whatsapp-icon" aria-hidden="true" focusable="false">
           <use href="#whatsapp-symbol"></use>
         </svg>
