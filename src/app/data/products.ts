@@ -12,7 +12,20 @@ const sampleColors: ProductColor[] = [
   { id: 'peacock', name: 'Peacock', hex: '#087e83', images: [], inStock: null },
 ];
 
-const productPhotoPlaceholder = '/images/product-photo-placeholder.svg';
+const oliveAbayaPhoto = '/images/abaya-olive-set.png';
+const oliveAbayaImageSlides = [
+  { src: oliveAbayaPhoto, label: 'Full set overview' },
+  { src: oliveAbayaPhoto, label: 'Abaya full view', viewBox: '94 0 355 768', aspectRatio: '355 / 768' },
+  { src: oliveAbayaPhoto, label: 'Abaya shape detail', viewBox: '453 0 219 313', aspectRatio: '219 / 313' },
+  { src: oliveAbayaPhoto, label: 'Neckline detail', viewBox: '453 316 219 203', aspectRatio: '219 / 203' },
+  { src: oliveAbayaPhoto, label: 'Sleeve and fabric detail', viewBox: '453 522 219 246', aspectRatio: '219 / 246' },
+];
+const createProductColors = (): ProductColor[] =>
+  sampleColors.map((color) => ({
+    ...color,
+    images: color.id === 'mehndi-green' ? [oliveAbayaPhoto] : [...color.images],
+    imageSlides: color.id === 'mehndi-green' ? [...oliveAbayaImageSlides] : [],
+  }));
 
 export const PRODUCTS: Product[] = [
   {
@@ -24,9 +37,10 @@ export const PRODUCTS: Product[] = [
     collectionLabel: '4-Piece Set',
     fabric: null,
     careInstructions: [],
-    images: [productPhotoPlaceholder],
-    image: productPhotoPlaceholder,
-    colors: sampleColors.map((color) => ({ ...color })),
+    images: [oliveAbayaPhoto],
+    imageSlides: oliveAbayaImageSlides,
+    image: oliveAbayaPhoto,
+    colors: createProductColors(),
     sizes: [],
     includedItems: ['Abaya', 'Dupatta', 'Hijab', 'Inner'],
     lengthInches: 54,
@@ -42,9 +56,10 @@ export const PRODUCTS: Product[] = [
     collectionLabel: '3-Piece Set',
     fabric: null,
     careInstructions: [],
-    images: [productPhotoPlaceholder],
-    image: productPhotoPlaceholder,
-    colors: sampleColors.map((color) => ({ ...color })),
+    images: [oliveAbayaPhoto],
+    imageSlides: oliveAbayaImageSlides,
+    image: oliveAbayaPhoto,
+    colors: createProductColors(),
     sizes: [],
     includedItems: ['Abaya', 'Dupatta', 'Hijab'],
     lengthInches: 54,

@@ -13,7 +13,6 @@ describe('CatalogHomeComponent', () => {
       product.price = null;
       product.sizes = [];
       for (const color of product.colors) {
-        color.images = [];
         color.inStock = null;
       }
     }
@@ -32,6 +31,8 @@ describe('CatalogHomeComponent', () => {
     const compiled = fixture.nativeElement as HTMLElement;
     expect(compiled.querySelector('h1')?.textContent).toContain('Timeless Elegance');
     expect(compiled.querySelectorAll('#collection app-product-card')).toHaveLength(2);
+    expect(compiled.querySelector('.product-image-wrap img')?.getAttribute('src'))
+      .toBe('/images/abaya-olive-set.png');
     expect(compiled.querySelectorAll('.cart, .wishlist, .checkout, .favorite-button')).toHaveLength(0);
     expect(compiled.querySelectorAll('.color-card')).toHaveLength(9);
   });
@@ -49,6 +50,18 @@ describe('CatalogHomeComponent', () => {
     expect(component.activeHeroSlide()).toBe(1);
     component.showHeroSlide(-1);
     expect(component.activeHeroSlide()).toBe(2);
+  });
+
+  it('uses the supplied real olive photo for both sets and the Mehndi Green shade', () => {
+    for (const product of PRODUCTS) {
+      expect(product.image).toBe('/images/abaya-olive-set.png');
+      expect(product.images).toContain('/images/abaya-olive-set.png');
+      expect(product.colors.find((color) => color.id === 'mehndi-green')?.images)
+        .toContain('/images/abaya-olive-set.png');
+    }
+
+    expect(PRODUCTS[0].includedItems).toEqual(['Abaya', 'Dupatta', 'Hijab', 'Inner']);
+    expect(PRODUCTS[1].includedItems).toEqual(['Abaya', 'Dupatta', 'Hijab']);
   });
 
   it('keeps WhatsApp inquiries populated with product, price, selection, and canonical page link', () => {
@@ -134,6 +147,10 @@ describe('CatalogHomeComponent', () => {
     const schema = document.querySelector<HTMLScriptElement>('#product-jsonld');
 
     expect(compiled.querySelector('h1')?.textContent).toContain('Aabroo 4-Piece Abaya Set');
+    expect(compiled.querySelector('.set-includes')?.textContent).toContain('Inner');
+    expect(compiled.querySelector('.set-includes')?.textContent).toContain('Dupatta');
+    expect(fixture.componentInstance.gallerySlides()).toHaveLength(5);
+    expect(fixture.componentInstance.gallerySlides()[0].label).toBe('Full set overview');
     expect(message).toContain('Size: Please confirm');
     expect(message).toContain('Colour: Please confirm');
     expect(message).toContain('Page: https://aabroo-modern-modest-wear.vercel.app/product/1');
@@ -142,7 +159,7 @@ describe('CatalogHomeComponent', () => {
     expect(document.title).toContain('Aabroo 4-Piece Abaya Set');
   });
 
-  it('updates the displayed colour and illustrative image when a colour has no real photo yet', async () => {
+  it('updates the displayed colour to the supplied real photo for Mehndi Green', async () => {
     const fixture = TestBed.createComponent(ProductPageComponent);
     fixture.componentRef.setInput('id', '1');
     fixture.detectChanges();
@@ -150,23 +167,38 @@ describe('CatalogHomeComponent', () => {
     fixture.detectChanges();
 
     const compiled = fixture.nativeElement as HTMLElement;
-    const peacock = [...compiled.querySelectorAll<HTMLButtonElement>('.colour-option')].find(
-      (button) => button.textContent?.includes('Peacock'),
+    const mehndiGreen = [...compiled.querySelectorAll<HTMLButtonElement>('.colour-option')].find(
+      (button) => button.textContent?.includes('Mehndi Green'),
     );
-    peacock?.click();
+    mehndiGreen?.click();
     fixture.detectChanges();
 
-    expect(compiled.querySelector('.selected-colour')?.textContent).toContain('Peacock');
-    expect(fixture.componentInstance.colorPreview()).toBe('#087e83');
+    expect(compiled.querySelector('.selected-colour')?.textContent).toContain('Mehndi Green');
+    expect(fixture.componentInstance.colorPreview()).toBeUndefined();
+    expect(fixture.componentInstance.gallerySlides().map((slide) => slide.src))
+      .toContain('/images/abaya-olive-set.png');
     expect(compiled.querySelector<HTMLButtonElement>('.colour-option[aria-pressed="true"]')?.textContent)
-      .toContain('Peacock');
+      .toContain('Mehndi Green');
 
     const gallery = TestBed.createComponent(ProductGalleryComponent);
-    gallery.componentRef.setInput('images', ['/images/product-photo-placeholder.svg']);
+    gallery.componentRef.setInput('slides', PRODUCTS[0].imageSlides);
     gallery.componentRef.setInput('alt', 'Abaya');
-    gallery.componentRef.setInput('colorPreview', '#087e83');
+    gallery.componentRef.setInput('colorPreview', undefined);
     gallery.detectChanges();
-    expect(gallery.nativeElement.querySelector('svg[role="img"] path[fill="#087e83"]')).not.toBeNull();
+    expect((gallery.nativeElement as HTMLElement).querySelector('.gallery-controls [aria-label="Next product image"]'))
+      .not.toBeNull();
+    (gallery.nativeElement as HTMLElement)
+      .querySelector<HTMLButtonElement>('[aria-label="Next product image"]')?.click();
+    gallery.detectChanges();
+    expect((gallery.nativeElement as HTMLElement).querySelector('.gallery-controls')?.textContent)
+      .toContain('Abaya full view');
+
+    gallery.componentRef.setInput('colorPreview', '#087e83');
+    gallery.componentRef.setInput('colorName', 'Peacock');
+    gallery.detectChanges();
+    expect((gallery.nativeElement as HTMLElement)
+      .querySelector('app-garment-color-preview svg path[fill="#087e83"]'))
+      .not.toBeNull();
   });
 
   it('keeps existing color preview and accessible size-guide dialog behavior', async () => {
@@ -174,15 +206,13 @@ describe('CatalogHomeComponent', () => {
     const component = fixture.componentInstance;
     const product = component.products()[0];
     component.selectColor(product.id, product.colors.find((color) => color.id === 'navy')!);
-    component.openDetails(product);
     fixture.detectChanges();
     await fixture.whenStable();
     fixture.detectChanges();
 
     const compiled = fixture.nativeElement as HTMLElement;
-    expect(compiled.querySelector('.detail-color-preview')?.getAttribute('aria-label')).toContain(
-      'Navy Blue',
-    );
+    expect(compiled.querySelector('app-garment-color-preview svg path[fill="#172747"]'))
+      .not.toBeNull();
     component.openSizeGuide();
     fixture.detectChanges();
     expect(compiled.querySelector('[aria-labelledby="size-guide-title"]')).not.toBeNull();

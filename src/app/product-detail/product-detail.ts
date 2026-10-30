@@ -1,4 +1,4 @@
-import { DecimalPipe, NgOptimizedImage } from '@angular/common';
+import { DecimalPipe } from '@angular/common';
 import {
   AfterViewInit,
   ChangeDetectionStrategy,
@@ -9,13 +9,13 @@ import {
   inject,
   input,
   output,
-  signal,
 } from '@angular/core';
-import { Product, ProductColor } from '../models/product';
+import { Product, ProductColor, ProductImageSlide } from '../models/product';
+import { ProductGalleryComponent } from '../product-gallery/product-gallery';
 
 @Component({
   selector: 'app-product-detail',
-  imports: [DecimalPipe, NgOptimizedImage],
+  imports: [DecimalPipe, ProductGalleryComponent],
   templateUrl: './product-detail.html',
   styleUrl: './product-detail.css',
   host: {
@@ -35,8 +35,6 @@ export class ProductDetailComponent implements AfterViewInit {
   readonly sizeGuideRequested = output<void>();
   readonly closed = output<void>();
 
-  readonly selectedImageIndex = signal(0);
-
   ngAfterViewInit(): void {
     this.closeButton?.nativeElement.focus();
   }
@@ -44,29 +42,28 @@ export class ProductDetailComponent implements AfterViewInit {
   readonly selectedColor = computed(() =>
     this.product().colors.find((color) => color.name === this.selectedColorName()),
   );
-  readonly selectedColorImageCount = computed(() => this.selectedColor()?.images.length ?? 0);
+  readonly gallerySlides = computed<ProductImageSlide[]>(() => {
+    const product = this.product();
+    const color = this.selectedColor();
+    if (!color) {
+      return product.imageSlides;
+    }
 
-  readonly currentImage = computed(
-    () => this.selectedColor()?.images[this.selectedImageIndex()] ?? this.product().image,
-  );
+    if (color.images.length === 0) {
+      return [];
+    }
+
+    return color.imageSlides?.length
+      ? color.imageSlides
+      : color.images.map((src, index) => ({ src, label: `${color.name} view ${index + 1}` }));
+  });
+  readonly colorPreview = computed(() => {
+    const color = this.selectedColor();
+    return color?.images.length === 0 ? color.hex : undefined;
+  });
 
   selectColor(color: ProductColor): void {
-    this.selectedImageIndex.set(0);
     this.colorSelected.emit(color);
-  }
-
-  showPreviousImage(): void {
-    const imageCount = this.selectedColor()?.images.length ?? 0;
-    if (imageCount > 1) {
-      this.selectedImageIndex.update((index) => (index - 1 + imageCount) % imageCount);
-    }
-  }
-
-  showNextImage(): void {
-    const imageCount = this.selectedColor()?.images.length ?? 0;
-    if (imageCount > 1) {
-      this.selectedImageIndex.update((index) => (index + 1) % imageCount);
-    }
   }
 
   onSizeChange(event: Event): void {

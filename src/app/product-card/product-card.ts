@@ -2,10 +2,11 @@ import { DecimalPipe, NgOptimizedImage } from '@angular/common';
 import { ChangeDetectionStrategy, Component, input, output } from '@angular/core';
 import { RouterLink } from '@angular/router';
 import { Product, ProductColor } from '../models/product';
+import { GarmentColorPreviewComponent } from '../garment-color-preview/garment-color-preview';
 
 @Component({
   selector: 'app-product-card',
-  imports: [DecimalPipe, NgOptimizedImage, RouterLink],
+  imports: [DecimalPipe, NgOptimizedImage, RouterLink, GarmentColorPreviewComponent],
   templateUrl: './product-card.html',
   styleUrl: './product-card.css',
   changeDetection: ChangeDetectionStrategy.OnPush,

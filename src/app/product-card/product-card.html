@@ -1,15 +1,28 @@
 <article class="product-card h-100">
   <div class="product-image-wrap">
-    <img
-      [ngSrc]="selectedColor?.images?.[0] || product().image"
-      [alt]="
-        product().image.includes('placeholder')
-          ? 'Product photo placeholder for ' + product().name
-          : product().name + ' design'
-      "
-      width="600"
-      height="750"
-    />
+    @if (selectedColor; as color) {
+      @if (color.images.length > 0) {
+        <img
+          [ngSrc]="color.images[0]"
+          [alt]="product().name + ' in ' + color.name + ' — product photo'"
+          width="768"
+          height="768"
+        />
+      } @else {
+        <app-garment-color-preview
+          [color]="color.hex"
+          [colorName]="color.name"
+          [productName]="product().name"
+        />
+      }
+    } @else {
+      <img
+        [ngSrc]="product().image"
+        [alt]="product().name + ' product photo'"
+        width="768"
+        height="768"
+      />
+    }
     @if (product().isNewArrival) {
       <span class="arrival-badge">New arrival</span>
     }
@@ -84,7 +97,9 @@
         <p class="image-note">Availability for {{ selectedColor.name }} is not confirmed yet.</p>
       }
       @if (selectedColor.images.length === 0) {
-        <p class="image-note">A photo for {{ selectedColor.name }} is not available yet.</p>
+        <p class="image-note">
+          Only the Mehndi Green product photo is available. This {{ selectedColor.name }} preview is illustrative.
+        </p>
       }
     }
     <div class="product-actions">

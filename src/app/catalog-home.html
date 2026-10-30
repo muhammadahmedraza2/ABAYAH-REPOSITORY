@@ -81,7 +81,7 @@
       <div class="hero-photo">
         <img
           [ngSrc]="products()[0].image"
-          alt="Abaya collection preview; product photo placeholder"
+          alt="Real olive-green abaya set photo"
           width="900"
           height="1125"
           priority
@@ -101,7 +101,7 @@
           <button class="category-card" type="button" (click)="setCategory(category.name)">
             <img
               [ngSrc]="category.image"
-              [alt]="category.name + ' collection photo placeholder'"
+              [alt]="category.name + ' collection product photo'"
               width="480"
               height="600"
               loading="lazy"
@@ -120,8 +120,8 @@
         <p>Choose your three-piece or four-piece set, then explore all nine colors below.</p>
       </div>
       <p class="sample-note">
-        Product photographs are placeholders until original photos are added. Please contact us to
-        confirm color availability and current prices.
+        Real photo of the olive-green abaya set. Other shade previews are illustrative; please
+        contact us to confirm colour availability and current prices.
       </p>
       <div class="collection-controls">
         <label class="search-control">
@@ -231,7 +231,10 @@
         <div class="color-gallery-heading">
           <p class="eyebrow">Nine graceful shades</p>
           <h3 id="color-gallery-heading">Choose Your Color</h3>
-          <p>Illustrative color previews. Product photos are placeholders until original photos are added.</p>
+          <p>
+            Mehndi Green shows the real product photo. Other shades are illustrative previews until
+            photos of those colours are available.
+          </p>
         </div>
         <div class="color-card-grid">
           @for (color of colorOptions(); track color.id) {

@@ -10,7 +10,7 @@ import {
 } from '@angular/core';
 import { RouterLink } from '@angular/router';
 import { WHATSAPP_NUMBER, STORE_URL } from '../config/contact';
-import { Product, ProductColor } from '../models/product';
+import { Product, ProductColor, ProductImageSlide } from '../models/product';
 import { ProductCatalogService } from '../services/product-catalog.service';
 import { SeoService } from '../services/seo.service';
 import { ProductGalleryComponent } from '../product-gallery/product-gallery';
@@ -24,14 +24,21 @@ import { ProductGalleryComponent } from '../product-gallery/product-gallery';
         <a routerLink="/" class="back-link">← Back to collection</a>
         <article>
           <div class="product-media">
-            @defer (on viewport) {
+            @defer (on idle) {
               <app-product-gallery
-                [images]="galleryImages()"
+                [slides]="gallerySlides()"
                 [alt]="item.name + ' product photo'"
                 [colorPreview]="colorPreview()"
+                [colorName]="selectedColor()?.name ?? ''"
               />
             } @placeholder {
-              <img [ngSrc]="item.image" [alt]="item.name + ' photo placeholder'" width="900" height="1125" priority />
+              <img
+                [ngSrc]="item.image"
+                [alt]="item.image.includes('placeholder') ? item.name + ' photo placeholder' : item.name + ' olive-green abaya photo'"
+                width="768"
+                height="768"
+                priority
+              />
             }
           </div>
           <div class="product-info">
@@ -45,6 +52,16 @@ import { ProductGalleryComponent } from '../product-gallery/product-gallery';
               }
             </p>
             <p>{{ item.description }}</p>
+            @if (item.includedItems?.length) {
+              <section class="set-includes" aria-labelledby="included-heading">
+                <h2 id="included-heading">This set includes</h2>
+                <ul>
+                  @for (includedItem of item.includedItems; track includedItem) {
+                    <li>{{ includedItem }}</li>
+                  }
+                </ul>
+              </section>
+            }
 
             <section aria-labelledby="color-heading">
               <h2 id="color-heading">Colour</h2>
@@ -150,9 +167,24 @@ export class ProductPageComponent {
   readonly product = this.item;
   readonly selectedColor = signal<ProductColor | undefined>(undefined);
   readonly selectedSize = signal('');
-  readonly galleryImages = computed(() => {
-    const colorImages = this.selectedColor()?.images ?? [];
-    return colorImages.length ? colorImages : (this.item()?.images ?? []);
+  readonly gallerySlides = computed<ProductImageSlide[]>(() => {
+    const item = this.item();
+    const color = this.selectedColor();
+    if (!item) {
+      return [];
+    }
+
+    if (!color) {
+      return item.imageSlides;
+    }
+
+    if (color.images.length === 0) {
+      return [];
+    }
+
+    return color.imageSlides?.length
+      ? color.imageSlides
+      : color.images.map((src, index) => ({ src, label: `${color.name} view ${index + 1}` }));
   });
   readonly colorPreview = computed(() => {
     const color = this.selectedColor();

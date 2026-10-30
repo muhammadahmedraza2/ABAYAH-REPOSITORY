@@ -20,8 +20,9 @@
 .product-image-wrap img {
   display: block;
   width: 100%;
-  aspect-ratio: 4 / 5;
-  object-fit: cover;
+  aspect-ratio: 1 / 1;
+  background: #e9e1d7;
+  object-fit: contain;
   transition: transform 220ms ease;
 }
 

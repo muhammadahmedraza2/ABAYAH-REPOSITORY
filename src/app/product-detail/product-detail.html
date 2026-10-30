@@ -17,72 +17,12 @@
     </button>
     <div class="row g-4 align-items-center">
       <div class="col-12 col-md-6">
-        <div class="detail-gallery">
-          @if (selectedColorImageCount() === 0) {
-            <svg
-              class="detail-image detail-color-preview"
-              viewBox="0 0 800 1000"
-              role="img"
-              [attr.aria-label]="
-                'Illustrative ' + selectedColor()?.name + ' color preview for ' + product().name
-              "
-              [style.--garment-color]="selectedColor()?.hex"
-              focusable="false"
-            >
-              <rect width="800" height="1000" fill="#e9e1d7" />
-              <path d="M0 710c175-74 306-30 436 20s245 47 364-17v287H0z" fill="#d9cabc" />
-              <path
-                d="M400 220c-58 0-98 46-100 108l-27 106-100 224 92 43 92-178 8 291h70l8-291 92 178 92-43-100-224-27-106c-2-62-42-108-100-108z"
-                fill="var(--garment-color)"
-              />
-              <path
-                d="M400 220c-40 0-63 38-63 94l63 68 63-68c0-56-23-94-63-94z"
-                fill="#f3ede6"
-              />
-              <path d="M400 383v431" stroke="#e9e1d7" stroke-width="6" />
-              <text
-                x="400"
-                y="900"
-                text-anchor="middle"
-                fill="#51443a"
-                font-family="Arial,sans-serif"
-                font-size="22"
-              >
-                Illustrative color preview
-              </text>
-            </svg>
-          } @else {
-            <img
-              class="detail-image"
-              [ngSrc]="currentImage()"
-              [alt]="
-                product().image.includes('placeholder')
-                  ? 'Product photo placeholder for ' + product().name
-                  : product().name + ' abaya design'
-              "
-              width="900"
-              height="1125"
-            />
-          }
-          @if (selectedColorImageCount() > 1) {
-            <button
-              class="gallery-arrow gallery-previous"
-              type="button"
-              aria-label="Previous product image"
-              (click)="showPreviousImage()"
-            >
-              ‹
-            </button>
-            <button
-              class="gallery-arrow gallery-next"
-              type="button"
-              aria-label="Next product image"
-              (click)="showNextImage()"
-            >
-              ›
-            </button>
-          }
-        </div>
+        <app-product-gallery
+          [slides]="gallerySlides()"
+          [alt]="product().name"
+          [colorPreview]="colorPreview()"
+          [colorName]="selectedColor()?.name ?? ''"
+        />
         @if (selectedColor(); as color) {
           <p
             class="stock-status"
@@ -97,26 +37,6 @@
               Availability to be confirmed
             }
           </p>
-          @if (color.images.length > 1) {
-            <div class="image-thumbnails" aria-label="More product images">
-              @for (image of color.images; track image; let index = $index) {
-                <button
-                  class="thumbnail-button"
-                  type="button"
-                  [class.active]="selectedImageIndex() === index"
-                  [attr.aria-label]="'Show image ' + (index + 1)"
-                  (click)="selectedImageIndex.set(index)"
-                >
-                  <img
-                    [ngSrc]="image"
-                    [alt]="product().name + ' view ' + (index + 1)"
-                    width="80"
-                    height="100"
-                  />
-                </button>
-              }
-            </div>
-          }
         }
       </div>
       <div class="col-12 col-md-6 detail-copy">
@@ -168,8 +88,8 @@
           </p>
           @if (color.images.length === 0) {
             <p class="image-note">
-              This is an illustrative color preview. A real photo of the {{ color.name }} abaya is
-              not available yet.
+              This {{ color.name }} image is an illustration, not a product photo. Only the
+              Mehndi Green photo is currently available.
             </p>
           }
         } @else {

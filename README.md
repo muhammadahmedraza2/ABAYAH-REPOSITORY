@@ -15,7 +15,7 @@ npm start
 
 - Catalog records live in `src/app/data/products.ts` and are exposed by `ProductCatalogService`.
 - WhatsApp numbers and the public canonical origin live in `src/app/config/contact.ts`.
-- Replace the current product placeholder with real 3–4 optimized WebP/AVIF photos per colour, then add verified fabric, size, price, and care data. The current repository does not contain those inputs, so missing values deliberately remain unconfirmed.
+- The supplied real olive-green abaya collage is stored at `public/images/abaya-olive-set.png` and used for both set listings and the Mehndi Green colour. Add separate verified 3–4 optimized WebP/AVIF photos per colour when available; other colour previews remain illustrative. Fabric, price, size, and care data are still unconfirmed and should only be filled with verified details.
 - Update `public/sitemap.xml` and `public/robots.txt` whenever the public domain changes.
 
 ## Deployment
